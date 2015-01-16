@@ -25,7 +25,7 @@ Vagrant.configure('2') do |config|
     override.ssh.username = 'sqre'
     override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
 
-    provider.token = API_TOKEN
+    provider.token = DO_API_TOKEN
     provider.image = 'centos-6-5-x64'
     provider.region = 'nyc3'
     provider.size = '2gb'
