@@ -24,6 +24,7 @@ Vagrant.configure('2') do |config|
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     override.ssh.username = 'sqre'
     override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+    override.vm.synced_folder '.', '/vagrant', :disabled => true
 
     provider.token = DO_API_TOKEN
     provider.image = 'centos-6-5-x64'
