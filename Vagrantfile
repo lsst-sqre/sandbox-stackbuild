@@ -19,7 +19,7 @@ Vagrant.configure('2') do |config|
 
     provider.token = API_TOKEN
     provider.image = 'centos-6-5-x64'
-    provider.region = 'sfo1'
+    provider.region = 'nyc3'
     provider.size = '2gb'
     provider.setup = true
     provider.ssh_key_name = 'sqre'
