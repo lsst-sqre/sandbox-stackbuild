@@ -21,8 +21,11 @@ Vagrant.configure('2') do |config|
 
   $puppet_script = <<-EOS.gsub(/^\s*/, '')
     rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
-    #rpm -q puppet || yum -y install puppet
-    yum update -y puppet
+    if rpm -q puppet; then
+      yum update -y puppet
+    else
+      yum -y install puppet
+    fi
     touch /etc/puppet/hiera.yaml
   EOS
 
