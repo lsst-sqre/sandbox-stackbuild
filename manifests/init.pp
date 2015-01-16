@@ -22,7 +22,7 @@ $pkg_list = [
   'zlib-devel',
 ]
 
-ensure_packages($pkg_list)
+package { $pkg_list: }
 
 $memoryrequired = to_bytes('16 GB')
 $swaprequired = $memoryrequired - to_bytes($::memorysize)
