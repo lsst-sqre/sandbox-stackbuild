@@ -1,8 +1,16 @@
 # vagrant plugin install vagrant-digitalocean
 
+# generate a psuedo unique string to append to the VM name to avoid droplet name/aws tag collisions.
+# eg, "jhoblitt-sxn"
+# based on:
+# https://stackoverflow.com/questions/88311/how-best-to-generate-a-random-string-in-ruby
+USER_TAG = "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}"
+
 Vagrant.configure('2') do |config|
 
-  config.vm.host_name = 'stackbuild'
+  config.vm.define :stackbuild do |sb|
+    sb.vm.hostname = "stackbuild-#{USER_TAG}"
+  end
 
   if Vagrant.has_plugin?("vagrant-hostmanager")
     config.hostmanager.enabled = true
