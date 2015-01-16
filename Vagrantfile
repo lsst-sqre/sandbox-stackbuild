@@ -1,0 +1,57 @@
+# vagrant plugin install vagrant-digitalocean
+
+Vagrant.configure('2') do |config|
+
+  config.vm.host_name = 'stackbuild'
+
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = false
+  end
+
+  config.vm.provider :digital_ocean do |provider, override|
+    override.vm.box = 'digital_ocean'
+    override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
+    override.ssh.username = 'sqre'
+    override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+
+    provider.token = API_TOKEN
+    provider.image = 'centos-6-5-x64'
+    provider.region = 'sfo1'
+    provider.size = '2gb'
+    provider.setup = true
+    provider.ssh_key_name = 'sqre'
+  end
+
+  $script = <<EOS
+rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+rpm -q puppet || yum -y install puppet
+touch /etc/puppet/hiera.yaml
+EOS
+
+  config.vm.provision "shell", inline: $script
+
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "manifests"
+    puppet.module_path = "modules"
+    puppet.manifest_file = "init.pp"
+    puppet.options = [
+     '--verbose',
+     '--report',
+     '--show_diff',
+     '--pluginsync',
+     '--disable_warnings=deprecations',
+## '--debug',
+## '--parser future',
+    ]
+  end
+end
+
+# concept from:
+# http://ryan.muller.io/devops/2014/03/26/chef-vagrant-and-digital-ocean.html
+load "#{Dir.home}/.sqre/do/credentials.rb"
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :

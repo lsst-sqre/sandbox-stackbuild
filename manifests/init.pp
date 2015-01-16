@@ -1,0 +1,38 @@
+include ::stdlib
+include ::augeas
+include ::epel
+
+Class['epel'] -> Package<| provider == 'yum' |>
+
+$pkg_list = [
+  'bison',
+  'blas',
+  'bzip2-devel',
+  'flex',
+  'freetype-devel',
+  'gcc-c++',
+  'gcc-gfortran',
+  'libuuid-devel',
+  'libXt-devel',
+  'ncurses-devel',
+  'make',
+  'openssl-devel',
+  'perl',
+  'readline-devel',
+  'zlib-devel',
+]
+
+ensure_packages($pkg_list)
+
+$memoryrequired = to_bytes('16 GB')
+$swaprequired = $memoryrequired - to_bytes($::memorysize)
+
+if $swaprequired < to_bytes('128 MB') {
+  $newswap = 0
+} else {
+  $newswap = $swaprequired
+}
+
+class { 'swap_file':
+  swapfilesize => $newswap,
+}
