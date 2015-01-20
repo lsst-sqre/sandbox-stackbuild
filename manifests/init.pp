@@ -4,6 +4,11 @@ include ::epel
 
 Class['epel'] -> Package<| provider == 'yum' |>
 
+$convience_pkgs = [
+  'screen',
+  'tree',
+]
+
 $pkg_list = [
   'bison',
   'blas',
@@ -24,6 +29,7 @@ $pkg_list = [
 ]
 
 package { $pkg_list: }
+package { $convience_pkgs: }
 
 $memoryrequired = to_bytes('16 GB')
 $swaprequired = $memoryrequired - to_bytes($::memorysize)
