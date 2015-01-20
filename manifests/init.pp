@@ -20,6 +20,7 @@ $pkg_list = [
   'perl',
   'readline-devel',
   'zlib-devel',
+  'patch',
 ]
 
 package { $pkg_list: }
