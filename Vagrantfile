@@ -8,8 +8,50 @@ USER_TAG = "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}"
 
 Vagrant.configure('2') do |config|
 
-  config.vm.define :stackbuild do |sb|
-    sb.vm.hostname = "stackbuild-#{USER_TAG}"
+  config.vm.define 'el6', primary: true do |el6|
+    el6.vm.hostname = "el6-#{USER_TAG}"
+
+    script = <<-EOS.gsub(/^\s*/, '')
+      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+    EOS
+
+    el6.vm.provider :virtualbox do |provider, override|
+      override.vm.box = 'puppetlabs/centos-6.5-64-nocm'
+      override.vm.provision 'puppetlabs-release',
+        type: "shell",
+        preserve_order: true,
+        inline: script
+    end
+    el6.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'centos-6-5-x64'
+      override.vm.provision 'puppetlabs-release',
+        type: "shell",
+        preserve_order: true,
+        inline: script
+    end
+  end
+
+  config.vm.define 'el7' do |el7|
+    el7.vm.hostname = "el7-#{USER_TAG}"
+
+    script = <<-EOS.gsub(/^\s*/, '')
+      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+    EOS
+
+    el7.vm.provider :virtualbox do |provider, override|
+      override.vm.box = 'puppetlabs/centos-7.0-64-nocm'
+      override.vm.provision 'puppetlabs-release',
+        type: "shell",
+        preserve_order: true,
+        inline: script
+    end
+    el7.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'centos-7-0-x64'
+      override.vm.provision 'puppetlabs-release',
+        type: "shell",
+        preserve_order: true,
+        inline: script
+    end
   end
 
   if Vagrant.has_plugin?("vagrant-hostmanager")
@@ -19,19 +61,24 @@ Vagrant.configure('2') do |config|
     config.hostmanager.include_offline = false
   end
 
-  $puppet_script = <<-EOS.gsub(/^\s*/, '')
-    rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+  puppet_script = <<-EOS.gsub(/^\s*/, '')
     if rpm -q puppet; then
       yum update -y puppet
     else
       yum -y install puppet
     fi
     touch /etc/puppet/hiera.yaml
+    yum update -y --exclude=kernel\*
   EOS
+
+  config.vm.provision 'puppetlabs-release',
+    type: "shell",
+    preserve_order: true,
+    inline: '/bin/true'
 
   config.vm.provision 'bootstrap',
     type: "shell",
-    inline: $puppet_script
+    inline: puppet_script
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -47,9 +94,6 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.provider :virtualbox do |provider, override|
-    override.vm.box     = 'centos-65-x64'
-    override.vm.box_url = 'http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box'
-
     provider.memory = 2048
     provider.cpus = 2
   end
@@ -73,16 +117,17 @@ Vagrant.configure('2') do |config|
         file_to_disk
       ]
 
-      $part_script = <<-EOS.gsub(/^\s*/, '')
+      part_script = <<-EOS.gsub(/^\s*/, '')
         if [ ! -e /dev/sdb1 ]; then
           parted -s /dev/sdb mklabel msdos
           parted -s /dev/sdb mkpart primary 0 -- -1
           pvcreate /dev/sdb1
-          vgextend VolGroup /dev/sdb1
+          #vgextend VolGroup /dev/sdb1
+          vgextend centos /dev/sdb1
           lvextend -l +100%FREE --resizefs /dev/VolGroup/lv_root
         fi
       EOS
-      $part_script = $part_script + $puppet_script
+      part_script = part_script + puppet_script
 
       # We're in provisioner ordering hell here as the partitioning needs to be
       # done before puppet attempts to configure swap space.  We have to play
@@ -90,7 +135,7 @@ Vagrant.configure('2') do |config|
       # before the puppet provisioner in order to get this to work.
       override.vm.provision 'bootstrap',
         type: 'shell',
-        inline: $part_script,
+        inline: part_script,
         preserve_order: true
     end
   end
@@ -103,7 +148,6 @@ Vagrant.configure('2') do |config|
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
     provider.token = DO_API_TOKEN
-    provider.image = 'centos-6-5-x64'
     provider.region = 'nyc3'
     provider.size = '16gb'
     provider.setup = true
