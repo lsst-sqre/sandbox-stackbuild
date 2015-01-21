@@ -13,6 +13,7 @@ $convience_pkgs = [
 $pkg_list = [
   'bison',
   'blas',
+  'bzip2', # needed on el7 -- pulled in by bzip2-devel on el6?
   'bzip2-devel',
   'flex',
   'freetype-devel',
