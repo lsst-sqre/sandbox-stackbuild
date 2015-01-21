@@ -1,6 +1,7 @@
 include ::stdlib
 include ::augeas
 include ::epel
+include ::sysstat
 
 Class['epel'] -> Package<| provider == 'yum' |>
 
