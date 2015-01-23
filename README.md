@@ -28,6 +28,16 @@ Sandbox
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
     bundle install
+	vagrant plugin install vagrant-hostmanager
+	vagrant plugin install vagrant-digitalocean
+	vagrant plugin install vagrant-aws
     bundle exec librarian-puppet install
     vagrant up --provider=digital_ocean
-    
+
+Other useful commands
+---------------------
+	vagrant status
+	vagrant ssh
+	vagrant ssh -- hostname
+	vagrant halt  # restart with vagrant up
+	vagrant destroy -f
