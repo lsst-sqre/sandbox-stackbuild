@@ -38,7 +38,6 @@ Sandbox
 	vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-cachier
 	vagrant plugin install vagrant-digitalocean
-	vagrant plugin install vagrant-aws
 
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
@@ -48,7 +47,6 @@ Other useful commands
 ---------------------
     vagrant up --provider=virtual_box
     vagrant up --provider=digital_ocean
-    vagrant up --provider=aws
     vagrant up <hostname> --provider=digital_ocean
 	vagrant status
 	vagrant ssh
