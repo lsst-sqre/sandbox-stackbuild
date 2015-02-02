@@ -118,6 +118,11 @@ Vagrant.configure('2') do |config|
     config.hostmanager.include_offline = false
   end
 
+  if Vagrant.has_plugin?('vagrant-librarian-puppet')
+    config.librarian_puppet.puppetfile_dir = "modules2"
+    config.librarian_puppet.placeholder_filename = ".gitkeep"
+  end
+
   puppet_script = <<-EOS.gsub(/^\s*/, '')
     if rpm -q puppet; then
       yum update -y puppet
