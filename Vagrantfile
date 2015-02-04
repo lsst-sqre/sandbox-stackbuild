@@ -239,13 +239,17 @@ Vagrant.configure('2') do |config|
       ]
 
       script = <<-EOS.gsub(/^\s*/, '')
-        VOLGROUP=$(vgs --noheadings --separator , | cut -f1 -d, | tr -d [[:space:]])
+        VGNAME=$(vgs --noheadings --separator , | cut -f1 -d, | tr -d [[:space:]])
+        LVLONGNAME=$(basename $(df / | tail -1 | cut -d " " -f1))
+        # trim everything left of the last - in the name
+        LVNAME=${LVLONGNAME##*-}
+
         if [ ! -e /dev/sdb1 ]; then
           parted -s /dev/sdb mklabel msdos
           parted -s /dev/sdb mkpart primary 0 -- -1
           pvcreate /dev/sdb1
-          vgextend ${VOLGROUP} /dev/sdb1
-          lvextend -l +100%FREE --resizefs /dev/${VOLGROUP}/lv_root
+          vgextend ${VGNAME} /dev/sdb1
+          lvextend -l +100%FREE --resizefs /dev/${VGNAME}/${LVNAME}
         fi
       EOS
 
@@ -263,6 +267,7 @@ Vagrant.configure('2') do |config|
   config.vm.provider :digital_ocean do |provider, override|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
+    # it appears to blow up if you set the username to vagrant...
     override.ssh.username = 'sqre'
     override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
     override.vm.synced_folder '.', '/vagrant', :disabled => true
