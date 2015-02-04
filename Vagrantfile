@@ -1,15 +1,64 @@
 # vagrant plugin install vagrant-digitalocean
 
-# generate a psuedo unique string to append to the VM name to avoid droplet name/aws tag collisions.
-# eg, "jhoblitt-sxn"
+# generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
+# eg, "jhoblitt-sxn-<os>"
 # based on:
 # https://stackoverflow.com/questions/88311/how-best-to-generate-a-random-string-in-ruby
-USER_TAG = "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}"
+def gen_hostname(boxname)
+  "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}-#{boxname}"
+end
+
+PUPPET_RPM_SCRIPT = <<-EOS.gsub(/^\s*/, '')
+  yum clean all
+  if rpm -q puppet; then
+    yum update -y puppet
+  else
+    yum -y install puppet
+  fi
+  touch /etc/puppet/hiera.yaml
+  yum update -y --exclude=kernel\*
+EOS
+
+PUPPET_DEB_SCRIPT = <<-EOS.gsub(/^\s*/, '')
+  apt-get update
+  # on 14.04, upgrade will both install on upgrade but this is not that case on
+  # 12.04
+  if dpkg --status puppet; then
+    apt-get upgrade -y puppet
+  else
+    apt-get install -y puppet
+  fi
+  touch /etc/puppet/hiera.yaml
+  apt-get upgrade -y
+  apt-get autoremove -y
+EOS
+
+def rpm_provider_setup(script, config, override)
+  override.vm.provision 'puppetlabs-release',
+    type: "shell",
+    preserve_order: true,
+    inline: script
+  config.vm.provision 'bootstrap-puppet',
+    type: "shell",
+    preserve_order: true,
+    inline: PUPPET_RPM_SCRIPT
+end
+
+def deb_provider_setup(script, config, override)
+  override.vm.provision 'puppetlabs-release',
+    type: "shell",
+    preserve_order: true,
+    inline: script
+  config.vm.provision 'bootstrap-puppet',
+    type: "shell",
+    preserve_order: true,
+    inline: PUPPET_DEB_SCRIPT
+end
 
 Vagrant.configure('2') do |config|
 
   config.vm.define 'el6', primary: true do |define|
-    define.vm.hostname = "el6-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('el6')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
@@ -17,22 +66,16 @@ Vagrant.configure('2') do |config|
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'puppetlabs/centos-6.5-64-nocm'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-6-5-x64'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'el7' do |define|
-    define.vm.hostname = "el7-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('el7')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
@@ -40,22 +83,16 @@ Vagrant.configure('2') do |config|
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'puppetlabs/centos-7.0-64-nocm'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-0-x64'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'f20' do |define|
-    define.vm.hostname = "f20-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('f20')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
@@ -63,11 +100,7 @@ Vagrant.configure('2') do |config|
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/fedora-20'
-
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
     # XXX f20 is broken on DO
     #
@@ -79,35 +112,67 @@ Vagrant.configure('2') do |config|
     # https://github.com/smdahlen/vagrant-digitalocean/issues/168
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'fedora-20-x64'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'f21' do |define|
-    define.vm.hostname = "f21-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('f21')
 
-    # there's yet a PL repo for f21
+    # PL repo for f21 hasn't been released
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
     EOS
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/fedora-21'
-
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'fedora-21-x64'
-      override.vm.provision 'puppetlabs-release',
-        type: "shell",
-        preserve_order: true,
-        inline: script
+      rpm_provider_setup(script, config, override)
+    end
+  end
+
+  config.vm.define 'u12' do |define|
+    define.vm.hostname = gen_hostname('u12')
+
+    script = <<-EOS.gsub(/^\s*/, '')
+      DEB="puppetlabs-release-precise.deb"
+      if [ ! -e $DEB ]; then
+        wget https://apt.puppetlabs.com/${DEB}
+      fi
+      dpkg -i $DEB
+    EOS
+
+    define.vm.provider :virtualbox do |provider, override|
+      override.vm.box = 'ubuntu/precise64'
+      deb_provider_setup(script, config, override)
+    end
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-12-04-x64'
+      deb_provider_setup(script, config, override)
+    end
+  end
+
+  config.vm.define 'u14' do |define|
+    define.vm.hostname = gen_hostname('u14')
+
+    script = <<-EOS.gsub(/^\s*/, '')
+      DEB="puppetlabs-release-trusty.deb"
+      if [ ! -e $DEB ]; then
+        wget https://apt.puppetlabs.com/${DEB}
+      fi
+      dpkg -i $DEB
+    EOS
+
+    define.vm.provider :virtualbox do |provider, override|
+      override.vm.box = 'ubuntu/trusty64'
+      deb_provider_setup(script, config, override)
+    end
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-14-04-x64'
+      deb_provider_setup(script, config, override)
     end
   end
 
@@ -123,24 +188,20 @@ Vagrant.configure('2') do |config|
     config.librarian_puppet.placeholder_filename = ".gitkeep"
   end
 
-  puppet_script = <<-EOS.gsub(/^\s*/, '')
-    if rpm -q puppet; then
-      yum update -y puppet
-    else
-      yum -y install puppet
-    fi
-    touch /etc/puppet/hiera.yaml
-    yum update -y --exclude=kernel\*
-  EOS
-
-  config.vm.provision 'puppetlabs-release',
+  # intended to allow per-provider fiddling
+  config.vm.provision 'preflight',
     type: "shell",
-    preserve_order: true,
     inline: '/bin/true'
 
-  config.vm.provision 'bootstrap',
+  # setup the remote repo needed to install a current version of puppet
+  config.vm.provision 'puppetlabs-release',
     type: "shell",
-    inline: puppet_script
+    inline: '/bin/true'
+
+  # install puppet
+  config.vm.provision 'bootstrap-puppet',
+    type: "shell",
+    inline: '/bin/true'
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -179,32 +240,36 @@ Vagrant.configure('2') do |config|
         file_to_disk
       ]
 
-      part_script = <<-EOS.gsub(/^\s*/, '')
-        VOLGROUP=$(vgs --noheadings --separator , | cut -f1 -d, | tr -d [[:space:]])
+      script = <<-EOS.gsub(/^\s*/, '')
+        VGNAME=$(vgs --noheadings --separator , | cut -f1 -d, | tr -d [[:space:]])
+        LVLONGNAME=$(basename $(df / | tail -1 | cut -d " " -f1))
+        # trim everything left of the last - in the name
+        LVNAME=${LVLONGNAME##*-}
+
         if [ ! -e /dev/sdb1 ]; then
           parted -s /dev/sdb mklabel msdos
           parted -s /dev/sdb mkpart primary 0 -- -1
           pvcreate /dev/sdb1
-          vgextend ${VOLGROUP} /dev/sdb1
-          lvextend -l +100%FREE --resizefs /dev/${VOLGROUP}/lv_root
+          vgextend ${VGNAME} /dev/sdb1
+          lvextend -l +100%FREE --resizefs /dev/${VGNAME}/${LVNAME}
         fi
       EOS
-      part_script = part_script + puppet_script
 
       # We're in provisioner ordering hell here as the partitioning needs to be
       # done before puppet attempts to configure swap space.  We have to play
       # games with overriding an existing shell provisioner that was declared
       # before the puppet provisioner in order to get this to work.
-      override.vm.provision 'bootstrap',
+      override.vm.provision 'preflight',
         type: 'shell',
-        inline: part_script,
-        preserve_order: true
+        preserve_order: true,
+        inline: script
     end
   end
 
   config.vm.provider :digital_ocean do |provider, override|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
+    # it appears to blow up if you set the username to vagrant...
     override.ssh.username = 'sqre'
     override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
     override.vm.synced_folder '.', '/vagrant', :disabled => true
