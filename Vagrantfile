@@ -1,10 +1,12 @@
 # vagrant plugin install vagrant-digitalocean
 
-# generate a psuedo unique string to append to the VM name to avoid droplet name/aws tag collisions.
-# eg, "jhoblitt-sxn"
+# generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
+# eg, "jhoblitt-sxn-<os>"
 # based on:
 # https://stackoverflow.com/questions/88311/how-best-to-generate-a-random-string-in-ruby
-USER_TAG = "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}"
+def gen_hostname(boxname)
+  "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}-#{boxname}"
+end
 
 PUPPET_RPM_SCRIPT = <<-EOS.gsub(/^\s*/, '')
   yum clean all
@@ -56,7 +58,7 @@ end
 Vagrant.configure('2') do |config|
 
   config.vm.define 'el6', primary: true do |define|
-    define.vm.hostname = "el6-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('el6')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
@@ -73,7 +75,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'el7' do |define|
-    define.vm.hostname = "el7-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('el7')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
@@ -90,7 +92,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'f20' do |define|
-    define.vm.hostname = "f20-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('f20')
 
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
@@ -115,9 +117,9 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'f21' do |define|
-    define.vm.hostname = "f21-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('f21')
 
-    # there's yet a PL repo for f21
+    # PL repo for f21 hasn't been released
     script = <<-EOS.gsub(/^\s*/, '')
       rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
     EOS
@@ -133,7 +135,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'u12' do |define|
-    define.vm.hostname = "u12-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('u12')
 
     script = <<-EOS.gsub(/^\s*/, '')
       DEB="puppetlabs-release-precise.deb"
@@ -154,7 +156,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'u14' do |define|
-    define.vm.hostname = "u14-#{USER_TAG}"
+    define.vm.hostname = gen_hostname('u14')
 
     script = <<-EOS.gsub(/^\s*/, '')
       DEB="puppetlabs-release-trusty.deb"
