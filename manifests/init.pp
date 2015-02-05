@@ -48,6 +48,7 @@ case $::osfamily {
       'bzip2-devel',
       'flex',
       'freetype-devel',
+      'git', # needed on el6, in @core for others?
       'gcc-c++',
       'gcc-gfortran',
       'libuuid-devel',
