@@ -145,9 +145,9 @@ Sandbox
 -------
 
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
-	vagrant plugin install vagrant-hostmanager
+    vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-cachier
-	vagrant plugin install vagrant-digitalocean
+    vagrant plugin install vagrant-digitalocean
 
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
