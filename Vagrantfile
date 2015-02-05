@@ -1,5 +1,3 @@
-# vagrant plugin install vagrant-digitalocean
-
 # generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
 # eg, "jhoblitt-sxn-<os>"
 # based on:
