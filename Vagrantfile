@@ -184,7 +184,7 @@ Vagrant.configure('2') do |config|
   end
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
-    config.librarian_puppet.puppetfile_dir = "modules2"
+    config.librarian_puppet.puppetfile_dir = "modules"
     config.librarian_puppet.placeholder_filename = ".gitkeep"
   end
 
@@ -270,21 +270,31 @@ Vagrant.configure('2') do |config|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
-    override.ssh.username = 'sqre'
-    override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+    override.ssh.username = SANDBOX_GROUP
+    override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
     provider.token = DO_API_TOKEN
     provider.region = 'nyc3'
     provider.size = '16gb'
     provider.setup = true
-    provider.ssh_key_name = 'sqre'
+    provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
   end
 end
 
 # concept from:
 # http://ryan.muller.io/devops/2014/03/26/chef-vagrant-and-digital-ocean.html
-load "#{Dir.home}/.sqre/do/credentials.rb"
+SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqreuser'
+if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
+  root="#{Dir.home}/.#{SANDBOX_GROUP}"
+  load "#{root}/do/credentials.rb"
+  SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
+  SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
+else
+  DO_API_TOKEN="<digitalocean api token>"
+  SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
+  SSH_PUBLIC_KEY_NAME=ENV['USER']
+end
 
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
