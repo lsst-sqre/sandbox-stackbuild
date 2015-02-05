@@ -31,26 +31,23 @@ PUPPET_DEB_SCRIPT = <<-EOS.gsub(/^\s*/, '')
   apt-get autoremove -y
 EOS
 
-def rpm_provider_setup(script, config, override)
+def provider_setup(reposcript, puppetscript, config, override)
   override.vm.provision 'puppetlabs-release',
     type: "shell",
     preserve_order: true,
-    inline: script
+    inline: reposcript
   config.vm.provision 'bootstrap-puppet',
     type: "shell",
     preserve_order: true,
-    inline: PUPPET_RPM_SCRIPT
+    inline: puppetscript
+end
+
+def rpm_provider_setup(script, config, override)
+  provider_setup(script, PUPPET_RPM_SCRIPT, config, override)
 end
 
 def deb_provider_setup(script, config, override)
-  override.vm.provision 'puppetlabs-release',
-    type: "shell",
-    preserve_order: true,
-    inline: script
-  config.vm.provision 'bootstrap-puppet',
-    type: "shell",
-    preserve_order: true,
-    inline: PUPPET_DEB_SCRIPT
+  provider_setup(script, PUPPET_DEB_SCRIPT, config, override)
 end
 
 Vagrant.configure('2') do |config|
