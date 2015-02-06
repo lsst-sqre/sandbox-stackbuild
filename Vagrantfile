@@ -51,7 +51,6 @@ def deb_provider_setup(script, config, override)
 end
 
 Vagrant.configure('2') do |config|
-
   config.vm.define 'el6', primary: true do |define|
     define.vm.hostname = gen_hostname('el6')
 
@@ -208,6 +207,9 @@ Vagrant.configure('2') do |config|
      '--pluginsync',
      '--disable_warnings=deprecations',
     ]
+    puppet.facter = {
+      "vagrant_sshkey" => File.read(SSH_PUBLIC_KEY_PATH),
+    }
   end
 
   config.vm.provider :virtualbox do |provider, override|
@@ -264,7 +266,7 @@ Vagrant.configure('2') do |config|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
-    override.ssh.username = SANDBOX_GROUP
+    override.ssh.username = 'lsstsw'
     override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
@@ -274,6 +276,13 @@ Vagrant.configure('2') do |config|
     provider.setup = true
     provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
   end
+
+  # based on:
+  # https://github.com/mitchellh/vagrant/issues/1753#issuecomment-53970750
+  #if ARGV[0] == 'ssh'
+  #  config.ssh.username = 'lsstsw'
+  #  config.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
+  #end
 end
 
 # concept from:
@@ -283,10 +292,12 @@ if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
   load "#{root}/do/credentials.rb"
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
+  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
 else
   DO_API_TOKEN="<digitalocean api token>"
   SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
+  SSH_PUBLIC_KEY_PATH="#{ENV['USER']}/.ssh/id_rsa.pub"
   SSH_PUBLIC_KEY_NAME=ENV['USER']
 end
 
