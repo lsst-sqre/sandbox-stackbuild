@@ -44,22 +44,25 @@ case $::osfamily {
     $pkg_list = [
       'bison',
       'blas',
-      'bzip2', # needed on el7 -- pulled in by bzip2-devel on el6?
       'bzip2-devel',
+      'bzip2', # needed on el7 -- pulled in by bzip2-devel on el6?
       'flex',
+      'fontconfig',
       'freetype-devel',
-      'git', # needed on el6, in @core for others?
       'gcc-c++',
       'gcc-gfortran',
+      'git', # needed on el6, in @core for others?
       'libuuid-devel',
+      'libXext',
+      'libXrender',
       'libXt-devel',
-      'ncurses-devel',
       'make',
+      'ncurses-devel',
       'openssl-devel',
+      'patch',
       'perl',
       'readline-devel',
       'zlib-devel',
-      'patch',
     ]
   }
   default: { fail() }
