@@ -159,6 +159,10 @@ Vagrant.configure('2') do |config|
     config.vm.provision :hosts
   end
 
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+
   # based on:
   # https://github.com/mitchellh/vagrant/issues/1753#issuecomment-53970750
   #if ARGV[0] == 'ssh'
