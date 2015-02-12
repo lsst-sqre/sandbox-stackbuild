@@ -144,6 +144,7 @@ Suggested for usage with virtualbox:
 Sandbox
 -------
 
+    vagrant plugin install vagrant-puppet-install
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
     vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-cachier
