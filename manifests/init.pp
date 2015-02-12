@@ -74,14 +74,10 @@ package { $convience_pkgs: }
 $memoryrequired = to_bytes('16 GB')
 $swaprequired = $memoryrequired - to_bytes($::memorysize)
 
-if $swaprequired < to_bytes('128 MB') {
-  $newswap = 0
-} else {
-  $newswap = $swaprequired
-}
-
-class { 'swap_file':
-  swapfilesize => $newswap,
+if $swaprequired >= to_bytes('1 GB') {
+  class { 'swap_file':
+    swapfilesize => $swaprequired,
+  }
 }
 
 $stack_user  = 'lsstsw'
