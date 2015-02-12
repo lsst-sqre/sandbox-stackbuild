@@ -85,13 +85,12 @@ $stack_group = 'lsstsw'
 $stack_path = "/home/${stack_group}/stack"
 
 $wheel_group = $::osfamily ? {
-  'Debian' => 'wheel',
+  'Debian' => 'sudo',
   default  => 'wheel',
 }
 
 user { $stack_user:
   ensure     => present,
-  #uid       => 34271,
   gid        => $stack_group,
   groups     => [$wheel_group],
   managehome => true,
@@ -99,7 +98,6 @@ user { $stack_user:
 
 group { $stack_group:
   ensure => present,
-  #gid    => 34271,
 }
 
 $sshkey_parts = split($::vagrant_sshkey, '\s+')
