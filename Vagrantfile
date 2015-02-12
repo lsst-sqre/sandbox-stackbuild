@@ -1,3 +1,13 @@
+%w{
+  vagrant-hosts
+  vagrant-puppet-install
+  vagrant-librarian-puppet
+}.each do |plugin|
+  unless Vagrant.has_plugin?(plugin)
+    raise "#{plugin} not installed"
+  end
+end
+
 # generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
 # eg, "jhoblitt-sxn-<os>"
 # based on:
