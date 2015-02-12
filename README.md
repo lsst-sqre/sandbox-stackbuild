@@ -135,7 +135,7 @@ These are required:
 
 Needed for DigitalOcean
 
-* vagrant-digitalocean
+* vagrant-digitalocean '~> 0.7.3'
 
 Suggested for usage with virtualbox:
 
@@ -148,7 +148,7 @@ Sandbox
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
     vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-cachier
-    vagrant plugin install vagrant-digitalocean
+    vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.7.3'
 
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
