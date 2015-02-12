@@ -1,3 +1,13 @@
+%w{
+  vagrant-hosts
+  vagrant-puppet-install
+  vagrant-librarian-puppet
+}.each do |plugin|
+  unless Vagrant.has_plugin?(plugin)
+    raise "#{plugin} not installed"
+  end
+end
+
 # generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
 # eg, "jhoblitt-sxn-<os>"
 # based on:
@@ -6,180 +16,60 @@ def gen_hostname(boxname)
   "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}-#{boxname}"
 end
 
-PUPPET_RPM_SCRIPT = <<-EOS.gsub(/^\s*/, '')
-  yum clean all
-  if rpm -q puppet; then
-    yum update -y puppet
-  else
-    yum -y install puppet
-  fi
-  touch /etc/puppet/hiera.yaml
-  yum update -y --exclude=kernel\*
-EOS
-
-PUPPET_DEB_SCRIPT = <<-EOS.gsub(/^\s*/, '')
-  apt-get update
-  # on 14.04, upgrade will both install on upgrade but this is not that case on
-  # 12.04
-  if dpkg --status puppet; then
-    apt-get upgrade -y puppet
-  else
-    apt-get install -y puppet
-  fi
-  touch /etc/puppet/hiera.yaml
-  apt-get upgrade -y
-  apt-get autoremove -y
-EOS
-
-def provider_setup(reposcript, puppetscript, config, override)
-  override.vm.provision 'puppetlabs-release',
-    type: "shell",
-    preserve_order: true,
-    inline: reposcript
-  config.vm.provision 'bootstrap-puppet',
-    type: "shell",
-    preserve_order: true,
-    inline: puppetscript
-end
-
-def rpm_provider_setup(script, config, override)
-  provider_setup(script, PUPPET_RPM_SCRIPT, config, override)
-end
-
-def deb_provider_setup(script, config, override)
-  provider_setup(script, PUPPET_DEB_SCRIPT, config, override)
-end
-
 Vagrant.configure('2') do |config|
-
   config.vm.define 'el6', primary: true do |define|
     define.vm.hostname = gen_hostname('el6')
 
-    script = <<-EOS.gsub(/^\s*/, '')
-      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
-    EOS
-
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'puppetlabs/centos-6.5-64-nocm'
-      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-6-5-x64'
-      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'el7' do |define|
     define.vm.hostname = gen_hostname('el7')
 
-    script = <<-EOS.gsub(/^\s*/, '')
-      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
-    EOS
-
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'puppetlabs/centos-7.0-64-nocm'
-      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-0-x64'
-      rpm_provider_setup(script, config, override)
-    end
-  end
-
-  config.vm.define 'f20' do |define|
-    define.vm.hostname = gen_hostname('f20')
-
-    script = <<-EOS.gsub(/^\s*/, '')
-      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
-    EOS
-
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/fedora-20'
-      rpm_provider_setup(script, config, override)
-    end
-    # XXX f20 is broken on DO
-    #
-    # The f20 DO droplet does not work with vagrant due to the ssh
-    # configuration.  Reported to DO in:
-    # https://cloud.digitalocean.com/support/508246
-    #
-    # we're also unable to fix the sudo configuration in a snapshot due to:
-    # https://github.com/smdahlen/vagrant-digitalocean/issues/168
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-20-x64'
-      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'f21' do |define|
     define.vm.hostname = gen_hostname('f21')
 
-    # PL repo for f21 hasn't been released
-    script = <<-EOS.gsub(/^\s*/, '')
-      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
-    EOS
-
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/fedora-21'
-      rpm_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'fedora-21-x64'
-      rpm_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'u12' do |define|
     define.vm.hostname = gen_hostname('u12')
 
-    script = <<-EOS.gsub(/^\s*/, '')
-      DEB="puppetlabs-release-precise.deb"
-      if [ ! -e $DEB ]; then
-        wget https://apt.puppetlabs.com/${DEB}
-      fi
-      dpkg -i $DEB
-    EOS
-
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'ubuntu/precise64'
-      deb_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-12-04-x64'
-      deb_provider_setup(script, config, override)
     end
   end
 
   config.vm.define 'u14' do |define|
     define.vm.hostname = gen_hostname('u14')
 
-    script = <<-EOS.gsub(/^\s*/, '')
-      DEB="puppetlabs-release-trusty.deb"
-      if [ ! -e $DEB ]; then
-        wget https://apt.puppetlabs.com/${DEB}
-      fi
-      dpkg -i $DEB
-    EOS
-
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'ubuntu/trusty64'
-      deb_provider_setup(script, config, override)
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-14-04-x64'
-      deb_provider_setup(script, config, override)
     end
-  end
-
-  if Vagrant.has_plugin?("vagrant-hostmanager")
-    config.hostmanager.enabled = true
-    config.hostmanager.manage_host = false
-    config.hostmanager.ignore_private_ip = false
-    config.hostmanager.include_offline = false
-  end
-
-  if Vagrant.has_plugin?('vagrant-librarian-puppet')
-    config.librarian_puppet.placeholder_filename = ".gitkeep"
   end
 
   # intended to allow per-provider fiddling
@@ -188,14 +78,7 @@ Vagrant.configure('2') do |config|
     inline: '/bin/true'
 
   # setup the remote repo needed to install a current version of puppet
-  config.vm.provision 'puppetlabs-release',
-    type: "shell",
-    inline: '/bin/true'
-
-  # install puppet
-  config.vm.provision 'bootstrap-puppet',
-    type: "shell",
-    inline: '/bin/true'
+  config.puppet_install.puppet_version = :latest
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -208,6 +91,9 @@ Vagrant.configure('2') do |config|
      '--pluginsync',
      '--disable_warnings=deprecations',
     ]
+    puppet.facter = {
+      "vagrant_sshkey" => File.read(SSH_PUBLIC_KEY_PATH),
+    }
   end
 
   config.vm.provider :virtualbox do |provider, override|
@@ -264,7 +150,7 @@ Vagrant.configure('2') do |config|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
-    override.ssh.username = SANDBOX_GROUP
+    override.ssh.username = 'lsstsw'
     override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
@@ -274,6 +160,25 @@ Vagrant.configure('2') do |config|
     provider.setup = true
     provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
   end
+
+  if Vagrant.has_plugin?('vagrant-librarian-puppet')
+    config.librarian_puppet.placeholder_filename = ".gitkeep"
+  end
+
+  if Vagrant.has_plugin?("vagrant-hosts")
+    config.vm.provision :hosts
+  end
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+
+  # based on:
+  # https://github.com/mitchellh/vagrant/issues/1753#issuecomment-53970750
+  #if ARGV[0] == 'ssh'
+  #  config.ssh.username = 'lsstsw'
+  #  config.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
+  #end
 end
 
 # concept from:
@@ -283,10 +188,12 @@ if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
   load "#{root}/do/credentials.rb"
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
+  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
 else
   DO_API_TOKEN="<digitalocean api token>"
   SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
+  SSH_PUBLIC_KEY_PATH="#{ENV['USER']}/.ssh/id_rsa.pub"
   SSH_PUBLIC_KEY_NAME=ENV['USER']
 end
 
