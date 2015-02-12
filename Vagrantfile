@@ -85,31 +85,6 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'f20' do |define|
-    define.vm.hostname = gen_hostname('f20')
-
-    script = <<-EOS.gsub(/^\s*/, '')
-      rpm -q puppetlabs-release || rpm -Uvh --force http://yum.puppetlabs.com/puppetlabs-release-fedora-20.noarch.rpm
-    EOS
-
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/fedora-20'
-      rpm_provider_setup(script, config, override)
-    end
-    # XXX f20 is broken on DO
-    #
-    # The f20 DO droplet does not work with vagrant due to the ssh
-    # configuration.  Reported to DO in:
-    # https://cloud.digitalocean.com/support/508246
-    #
-    # we're also unable to fix the sudo configuration in a snapshot due to:
-    # https://github.com/smdahlen/vagrant-digitalocean/issues/168
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-20-x64'
-      rpm_provider_setup(script, config, override)
-    end
-  end
-
   config.vm.define 'f21' do |define|
     define.vm.hostname = gen_hostname('f21')
 
