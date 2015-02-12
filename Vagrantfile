@@ -62,17 +62,6 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  if Vagrant.has_plugin?("vagrant-hostmanager")
-    config.hostmanager.enabled = true
-    config.hostmanager.manage_host = false
-    config.hostmanager.ignore_private_ip = false
-    config.hostmanager.include_offline = false
-  end
-
-  if Vagrant.has_plugin?('vagrant-librarian-puppet')
-    config.librarian_puppet.placeholder_filename = ".gitkeep"
-  end
-
   # intended to allow per-provider fiddling
   config.vm.provision 'preflight',
     type: "shell",
@@ -160,6 +149,14 @@ Vagrant.configure('2') do |config|
     provider.size = '16gb'
     provider.setup = true
     provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
+  end
+
+  if Vagrant.has_plugin?('vagrant-librarian-puppet')
+    config.librarian_puppet.placeholder_filename = ".gitkeep"
+  end
+
+  if Vagrant.has_plugin?("vagrant-hosts")
+    config.vm.provision :hosts
   end
 
   # based on:
