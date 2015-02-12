@@ -75,9 +75,14 @@ $memoryrequired = to_bytes('16 GB')
 $swaprequired = $memoryrequired - to_bytes($::memorysize)
 
 if $swaprequired >= to_bytes('1 GB') {
-  class { 'swap_file':
-    swapfilesize => $swaprequired,
-  }
+  $ensure_swap = 'present'
+} else {
+  $ensure_swap = 'absent'
+}
+
+class { 'swap_file':
+  ensure       => $ensure_swap,
+  swapfilesize => $swaprequired,
 }
 
 $stack_user  = 'lsstsw'
