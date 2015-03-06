@@ -31,6 +31,8 @@ case $::osfamily {
       'libfontconfig1',
       # needed for xrootd build
       'cmake',
+      # needed for mysqlproxy
+      'libglib2.0-dev',
     ]
   }
   'RedHat': {
@@ -67,6 +69,8 @@ case $::osfamily {
       'zlib-devel',
       # needed for xrootd build
       'cmake',
+      # needed for mysqlproxy
+      'glib2-devel',
     ]
   }
   default: { fail() }
