@@ -29,6 +29,8 @@ case $::osfamily {
       # needed for shapelet tests
       'libxrender1',
       'libfontconfig1',
+      # needed for xrootd build
+      'cmake',
     ]
   }
   'RedHat': {
@@ -63,6 +65,8 @@ case $::osfamily {
       'perl',
       'readline-devel',
       'zlib-devel',
+      # needed for xrootd build
+      'cmake',
     ]
   }
   default: { fail() }
@@ -145,6 +149,6 @@ exec { 'newinstall.sh':
   user        => $stack_user,
   logoutput   => true,
   creates     => "${stack_path}/loadLSST.zsh",
-  timeout     => 600,
+  timeout     => 900,
   require     => File['newinstall.sh'],
 }
