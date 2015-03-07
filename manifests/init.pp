@@ -33,6 +33,8 @@ case $::osfamily {
       'cmake',
       # needed for mysqlproxy
       'libglib2.0-dev',
+      # needed to build zookeeper
+      'openjdk-7-jre',
     ]
   }
   'RedHat': {
@@ -71,6 +73,8 @@ case $::osfamily {
       'cmake',
       # needed for mysqlproxy
       'glib2-devel',
+      # needed to build zookeeper
+      'java-1.7.0-openjdk',
     ]
   }
   default: { fail() }
