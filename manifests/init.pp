@@ -30,6 +30,8 @@ case $::osfamily {
       # needed for shapelet tests
       'libxrender1',
       'libfontconfig1',
+      # needed by lua
+      'libncurses5-dev',
       # needed for xrootd build
       'cmake',
       # needed for mysqlproxy
@@ -75,6 +77,8 @@ case $::osfamily {
       'perl',
       'readline-devel',
       'zlib-devel',
+      # needed by lua
+      'ncurses-devel',
       # needed for xrootd build
       'cmake',
       # needed for mysqlproxy
