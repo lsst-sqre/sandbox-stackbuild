@@ -17,6 +17,7 @@ case $::osfamily {
       # list from https://confluence.lsstcorp.org/display/LSWUG/Prerequisites
       'bison',
       'curl',
+      'ca-certificates', # needed by curl on ubuntu
       'flex',
       'g++',
       'git',
@@ -49,6 +50,7 @@ case $::osfamily {
 
     $pkg_list = [
       'bison',
+      'curl',
       'blas',
       'bzip2-devel',
       'bzip2', # needed on el7 -- pulled in by bzip2-devel on el6?
