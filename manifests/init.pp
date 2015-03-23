@@ -36,6 +36,10 @@ case $::osfamily {
       'libglib2.0-dev',
       # needed to build zookeeper
       'openjdk-7-jre',
+      # needed to build git
+      'gettext',
+      'libcurl4-openssl-dev',
+      'perl-modules',
     ]
   }
   'RedHat': {
@@ -77,6 +81,10 @@ case $::osfamily {
       'glib2-devel',
       # needed to build zookeeper
       'java-1.7.0-openjdk',
+      # needed to build git
+      'gettext',
+      'libcurl-devel',
+      'perl-ExtUtils-MakeMaker',
     ]
   }
   default: { fail() }
