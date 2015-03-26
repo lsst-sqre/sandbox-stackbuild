@@ -21,7 +21,7 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = gen_hostname('el6')
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'puppetlabs/centos-6.5-64-nocm'
+      override.vm.box = 'chef/centos-6.6'
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-6-5-x64'
@@ -32,7 +32,7 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = gen_hostname('el7')
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'puppetlabs/centos-7.0-64-nocm'
+      override.vm.box = 'chef/centos-7.0'
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-0-x64'
@@ -72,11 +72,6 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  # intended to allow per-provider fiddling
-  config.vm.provision 'preflight',
-    type: "shell",
-    inline: '/bin/true'
-
   # setup the remote repo needed to install a current version of puppet
   config.puppet_install.puppet_version = :latest
 
@@ -99,51 +94,6 @@ Vagrant.configure('2') do |config|
   config.vm.provider :virtualbox do |provider, override|
     provider.memory = 2048
     provider.cpus = 2
-  end
-
-  # taken from:
-  # https://github.com/mitchellh/vagrant/issues/2339
-  file_to_disk = File.realpath( "." ).to_s + "/disk.vdi"
-  if ! File.exist?(file_to_disk)
-    config.vm.provider :virtualbox do |provider, override|
-      provider.customize [
-        'createhd',
-        '--filename', file_to_disk,
-        '--format', 'VDI',
-        '--size', 32 * 1024
-      ]
-      provider.customize [
-        'storageattach', :id,
-        '--storagectl', 'IDE Controller',
-        '--port', 1, '--device', 0,
-        '--type', 'hdd', '--medium',
-        file_to_disk
-      ]
-
-      script = <<-EOS.gsub(/^\s*/, '')
-        VGNAME=$(vgs --noheadings --separator , | cut -f1 -d, | tr -d [[:space:]])
-        LVLONGNAME=$(basename $(df / | tail -1 | cut -d " " -f1))
-        # trim everything left of the last - in the name
-        LVNAME=${LVLONGNAME##*-}
-
-        if [ ! -e /dev/sdb1 ]; then
-          parted -s /dev/sdb mklabel msdos
-          parted -s /dev/sdb mkpart primary 0 -- -1
-          pvcreate /dev/sdb1
-          vgextend ${VGNAME} /dev/sdb1
-          lvextend -l +100%FREE --resizefs /dev/${VGNAME}/${LVNAME}
-        fi
-      EOS
-
-      # We're in provisioner ordering hell here as the partitioning needs to be
-      # done before puppet attempts to configure swap space.  We have to play
-      # games with overriding an existing shell provisioner that was declared
-      # before the puppet provisioner in order to get this to work.
-      override.vm.provision 'preflight',
-        type: 'shell',
-        preserve_order: true,
-        inline: script
-    end
   end
 
   config.vm.provider :digital_ocean do |provider, override|

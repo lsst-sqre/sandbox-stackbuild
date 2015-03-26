@@ -14,4 +14,3 @@ tmp
 modules
 .librarian
 Puppetfile.lock
-*.vdi

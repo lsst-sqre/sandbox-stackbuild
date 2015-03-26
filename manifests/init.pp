@@ -17,6 +17,7 @@ case $::osfamily {
       # list from https://confluence.lsstcorp.org/display/LSWUG/Prerequisites
       'bison',
       'curl',
+      'ca-certificates', # needed by curl on ubuntu
       'flex',
       'g++',
       'git',
@@ -29,6 +30,18 @@ case $::osfamily {
       # needed for shapelet tests
       'libxrender1',
       'libfontconfig1',
+      # needed by lua
+      'libncurses5-dev',
+      # needed for xrootd build
+      'cmake',
+      # needed for mysqlproxy
+      'libglib2.0-dev',
+      # needed to build zookeeper
+      'openjdk-7-jre',
+      # needed to build git
+      'gettext',
+      'libcurl4-openssl-dev',
+      'perl-modules',
     ]
   }
   'RedHat': {
@@ -43,6 +56,7 @@ case $::osfamily {
 
     $pkg_list = [
       'bison',
+      'curl',
       'blas',
       'bzip2-devel',
       'bzip2', # needed on el7 -- pulled in by bzip2-devel on el6?
@@ -63,6 +77,18 @@ case $::osfamily {
       'perl',
       'readline-devel',
       'zlib-devel',
+      # needed by lua
+      'ncurses-devel',
+      # needed for xrootd build
+      'cmake',
+      # needed for mysqlproxy
+      'glib2-devel',
+      # needed to build zookeeper
+      'java-1.7.0-openjdk',
+      # needed to build git
+      'gettext',
+      'libcurl-devel',
+      'perl-ExtUtils-MakeMaker',
     ]
   }
   default: { fail() }
@@ -145,6 +171,6 @@ exec { 'newinstall.sh':
   user        => $stack_user,
   logoutput   => true,
   creates     => "${stack_path}/loadLSST.zsh",
-  timeout     => 600,
+  timeout     => 900,
   require     => File['newinstall.sh'],
 }
