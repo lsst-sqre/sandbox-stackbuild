@@ -143,7 +143,7 @@ if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
 else
   DO_API_TOKEN="<digitalocean api token>"
   SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
-  SSH_PUBLIC_KEY_PATH="#{ENV['USER']}/.ssh/id_rsa.pub"
+  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=ENV['USER']
 end
 
