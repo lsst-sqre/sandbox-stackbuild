@@ -71,7 +71,6 @@ case $::osfamily {
       'libXrender',
       'libXt-devel',
       'make',
-      'ncurses-devel',
       'openssl-devel',
       'patch',
       'perl',
