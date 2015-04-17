@@ -22,6 +22,7 @@ SQRE credentials
     git clone ~/Dropbox/Josh-Frossie-share/git/sqre.git .sqre
     chmod 0700 .sqre
     ls -lad .sqre
+    export SQRE_SANDBOX_GROUP=sqre
 
 ### VirtualBox && Vagrant Installation
 
