@@ -131,13 +131,17 @@ Vagrant plugins
 
 These are required:
 
-* vagrant-hosts
+* vagrant-hostmanager
 * vagrant-puppet-install
 * vagrant-librarian-puppet '~> 0.9.0'
 
 Needed for DigitalOcean
 
 * vagrant-digitalocean '~> 0.7.3'
+
+Needed for AWS EC2
+
+* vagrant-aws '~> 0.7.0'
 
 Suggested for usage with virtualbox:
 
@@ -146,11 +150,16 @@ Suggested for usage with virtualbox:
 Sandbox
 -------
 
-    vagrant plugin install vagrant-hosts
+    vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-puppet-install
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
     vagrant plugin install vagrant-cachier
+
     vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.7.3'
+    vagrant plugin install vagrant-aws --plugin-version '~> 0.6.0'
+
+    # sanity check
+    vagrant plugin list
 
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild

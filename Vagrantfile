@@ -1,7 +1,7 @@
 %w{
-  vagrant-hosts
-  vagrant-puppet-install
+  vagrant-hostmanager
   vagrant-librarian-puppet
+  vagrant-puppet-install
 }.each do |plugin|
   unless Vagrant.has_plugin?(plugin)
     raise "#{plugin} not installed"
@@ -26,6 +26,18 @@ Vagrant.configure('2') do |config|
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-6-5-x64'
     end
+    define.vm.provider :aws do |provider, override|
+      # base centos 6 ami
+      # provider.ami = 'ami-81d092b1'
+      # override.ssh.username = 'root'
+
+      # packer rebuild of base ami
+      #provider.ami = 'ami-47576477'
+
+      # vagrant burned ami
+      provider.ami = 'ami-fd5b68cd'
+      provider.region = 'us-west-2'
+    end
   end
 
   config.vm.define 'el7' do |define|
@@ -36,6 +48,18 @@ Vagrant.configure('2') do |config|
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-0-x64'
+    end
+    define.vm.provider :aws do |provider, override|
+      # base centos 7 ami
+      # provider.ami = 'ami-c7d092f7'
+      # override.ssh.username = 'centos'
+
+      # packer build of base ami
+      # provider.ami = 'ami-29576419'
+
+      # vagrant burned ami
+      provider.ami = 'ami-cd5566fd'
+      provider.region = 'us-west-2'
     end
   end
 
@@ -111,12 +135,33 @@ Vagrant.configure('2') do |config|
     provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
   end
 
+  config.vm.provider :aws do |provider, override|
+    override.vm.box = 'aws'
+    override.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
+    # http://blog.damore.it/2015/01/aws-vagrant-no-host-ip-was-given-to.html
+    override.nfs.functional = false
+    override.vm.synced_folder '.', '/vagrant', :disabled => true
+    override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+    provider.keypair_name = "sqre"
+    provider.access_key_id = AWS_ACCESS_KEY
+    provider.secret_access_key = AWS_SECRET_KEY
+    provider.region = 'us-west-2'
+    provider.security_groups = ['sshonly']
+    #provider.instance_type = 'm3.medium'
+    provider.instance_type = 'c4.2xlarge'
+    provider.ebs_optimized = true
+    provider.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 40 }]
+    provider.tags = { 'Name' => "stackbuild" }
+  end
+
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
     config.librarian_puppet.placeholder_filename = ".gitkeep"
   end
 
-  if Vagrant.has_plugin?("vagrant-hosts")
-    config.vm.provision :hosts
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.vm.provision :hostmanager
+    config.hostmanager.include_offline = true
+    config.hostmanager.ignore_private_ip = false
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")
@@ -137,6 +182,7 @@ SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqreuser'
 if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
   load "#{root}/do/credentials.rb"
+  load "#{root}/aws/credentials.rb"
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
   SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
