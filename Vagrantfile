@@ -181,8 +181,10 @@ end
 SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqreuser'
 if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
-  load "#{root}/do/credentials.rb"
-  load "#{root}/aws/credentials.rb"
+  do_c = "#{root}/do/credentials.rb"
+  aws_c = "#{root}/aws/credentials.rb"
+  load do_c if File.exists? do_c
+  load aws_c if File.exists? aws_c
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
   SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
