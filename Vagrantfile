@@ -147,10 +147,15 @@ Vagrant.configure('2') do |config|
     provider.secret_access_key = AWS_SECRET_KEY
     provider.region = 'us-west-2'
     provider.security_groups = ['sshonly']
-    #provider.instance_type = 'm3.medium'
     provider.instance_type = 'c4.2xlarge'
     provider.ebs_optimized = true
-    provider.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 40 }]
+    # provider.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 40 }]
+    provider.block_device_mapping = [{
+      'DeviceName'              => '/dev/sda1',
+      'Ebs.VolumeSize'          => 100,
+      'Ebs.VolumeType'          => 'gp2',
+      'Ebs.DeleteOnTermination' => 'true',
+    }]
     provider.tags = { 'Name' => "stackbuild" }
   end
 
