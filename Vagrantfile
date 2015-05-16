@@ -15,10 +15,18 @@ end
 def gen_hostname(boxname)
   "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}-#{boxname}"
 end
+def ci_hostname(hostname, provider)
+  provider.user_data = <<-EOS
+#cloud-config
+hostname: #{hostname}
+manage_etc_hosts: localhost
+  EOS
+end
 
 Vagrant.configure('2') do |config|
   config.vm.define 'el6', primary: true do |define|
-    define.vm.hostname = gen_hostname('el6')
+    hostname = gen_hostname('el6')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/centos-6.6'
@@ -27,6 +35,8 @@ Vagrant.configure('2') do |config|
       provider.image = 'centos-6-5-x64'
     end
     define.vm.provider :aws do |provider, override|
+      ci_hostname(hostname, provider)
+
       # base centos 6 ami
       # provider.ami = 'ami-81d092b1'
       # override.ssh.username = 'root'
@@ -41,7 +51,8 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'el7' do |define|
-    define.vm.hostname = gen_hostname('el7')
+    hostname = gen_hostname('el7')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/centos-7.0'
@@ -50,6 +61,8 @@ Vagrant.configure('2') do |config|
       provider.image = 'centos-7-0-x64'
     end
     define.vm.provider :aws do |provider, override|
+      ci_hostname(hostname, provider)
+
       # base centos 7 ami
       # provider.ami = 'ami-c7d092f7'
       # override.ssh.username = 'centos'
