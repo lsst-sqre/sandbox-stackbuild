@@ -32,10 +32,10 @@ Vagrant.configure('2') do |config|
       # override.ssh.username = 'root'
 
       # packer rebuild of base ami
-      #provider.ami = 'ami-47576477'
+      # provider.ami = 'ami-874b79b7'
 
       # vagrant burned ami
-      provider.ami = 'ami-fd5b68cd'
+      provider.ami = 'ami-174f7d27'
       provider.region = 'us-west-2'
     end
   end
