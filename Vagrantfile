@@ -76,14 +76,14 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'f21' do |define|
-    define.vm.hostname = gen_hostname('f21')
+  config.vm.define 'f22' do |define|
+    define.vm.hostname = gen_hostname('f22')
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/fedora-21'
+      override.vm.box = 'chef/fedora-22'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-21-x64'
+      provider.image = 'fedora-22-x64'
     end
   end
 
