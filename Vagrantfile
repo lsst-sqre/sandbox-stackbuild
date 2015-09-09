@@ -44,9 +44,9 @@ Vagrant.configure('2') do |config|
       # packer rebuild of base ami
       # provider.ami = 'ami-874b79b7'
 
-      # vagrant burned ami
-      provider.ami = 'ami-174f7d27'
-      provider.region = 'us-west-2'
+      # packer built
+      provider.ami = 'ami-67e28202'
+      provider.region = 'us-east-1'
     end
   end
 
@@ -70,14 +70,15 @@ Vagrant.configure('2') do |config|
       # packer build of base ami
       # provider.ami = 'ami-29576419'
 
-      # vagrant burned ami
-      provider.ami = 'ami-cd5566fd'
-      provider.region = 'us-west-2'
+      # packer built
+      provider.ami = 'ami-ffe3839a'
+      provider.region = 'us-east-1'
     end
   end
 
   config.vm.define 'f22' do |define|
-    define.vm.hostname = gen_hostname('f22')
+    hostname = gen_hostname('f22')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
       override.vm.box = 'chef/fedora-22'
@@ -154,18 +155,18 @@ Vagrant.configure('2') do |config|
     # http://blog.damore.it/2015/01/aws-vagrant-no-host-ip-was-given-to.html
     override.nfs.functional = false
     override.vm.synced_folder '.', '/vagrant', :disabled => true
+    #override.vm.synced_folder 'hieradata/', '/tmp/vagrant-puppet/hieradata'
     override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
     provider.keypair_name = "sqre"
-    provider.access_key_id = AWS_ACCESS_KEY
-    provider.secret_access_key = AWS_SECRET_KEY
-    provider.region = 'us-west-2'
+    provider.access_key_id = ENV['AWS_ACCESS_KEY_ID']
+    provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+    provider.region = ENV['AWS_DEFAULT_REGION']
     provider.security_groups = ['sshonly']
     provider.instance_type = 'c4.2xlarge'
     provider.ebs_optimized = true
-    # provider.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 40 }]
     provider.block_device_mapping = [{
       'DeviceName'              => '/dev/sda1',
-      'Ebs.VolumeSize'          => 100,
+      'Ebs.VolumeSize'          => 40,
       'Ebs.VolumeType'          => 'gp2',
       'Ebs.DeleteOnTermination' => 'true',
     }]
