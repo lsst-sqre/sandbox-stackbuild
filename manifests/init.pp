@@ -63,14 +63,6 @@ group { $stack_group:
   ensure => present,
 }
 
-$sshkey_parts = split($::vagrant_sshkey, '\s+')
-
-ssh_authorized_key { $sshkey_parts[2]:
-  user => $stack_user,
-  type => $sshkey_parts[0],
-  key  => $sshkey_parts[1],
-}
-
 file { 'stack':
   ensure  => directory,
   owner   => $stack_user,

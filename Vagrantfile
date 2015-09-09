@@ -124,9 +124,6 @@ Vagrant.configure('2') do |config|
      '--pluginsync',
      '--disable_warnings=deprecations',
     ]
-    puppet.facter = {
-      "vagrant_sshkey" => File.read(SSH_PUBLIC_KEY_PATH),
-    }
   end
 
   config.vm.provider :virtualbox do |provider, override|
@@ -156,8 +153,9 @@ Vagrant.configure('2') do |config|
     override.nfs.functional = false
     override.vm.synced_folder '.', '/vagrant', :disabled => true
     #override.vm.synced_folder 'hieradata/', '/tmp/vagrant-puppet/hieradata'
-    override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
-    provider.keypair_name = "sqre"
+    #override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+    override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
+    provider.keypair_name = SSH_PUBLIC_KEY_NAME
     provider.access_key_id = ENV['AWS_ACCESS_KEY_ID']
     provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
     provider.region = ENV['AWS_DEFAULT_REGION']
@@ -205,13 +203,15 @@ if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   load do_c if File.exists? do_c
   load aws_c if File.exists? aws_c
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
-  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
 else
-  DO_API_TOKEN="<digitalocean api token>"
-  SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
-  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
-  SSH_PUBLIC_KEY_NAME=ENV['USER']
+  if ENV['DO_API_TOKEN']
+    DO_API_TOKEN = ENV['DO_API_TOKEN']
+  else
+    DO_API_TOKEN = '<api key...>'
+  end
+  SSH_PRIVATE_KEY_PATH="#{Dir.home}/.vagrant.d/insecure_private_key"
+  SSH_PUBLIC_KEY_NAME='vagrant'
 end
 
 # -*- mode: ruby -*-
