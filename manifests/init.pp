@@ -6,6 +6,18 @@ include ::lsststack
 
 Class['lsststack'] -> File['newinstall.sh']
 
+$stack_user  = $::lsst_stack_user ? {
+  undef   => 'lsstsw',
+  default => $::lsst_stack_user,
+}
+$stack_group = $stack_user
+$stack_path = "/home/${stack_user}/stack"
+
+$wheel_group = $::osfamily ? {
+  'Debian' => 'sudo',
+  default  => 'wheel',
+}
+
 case $::osfamily {
   'Debian': {
     $convience_pkgs = [
@@ -41,15 +53,6 @@ if $swaprequired >= to_bytes('1 GB') {
 class { 'swap_file':
   ensure       => $ensure_swap,
   swapfilesize => $swaprequired,
-}
-
-$stack_user  = 'lsstsw'
-$stack_group = 'lsstsw'
-$stack_path = "/home/${stack_group}/stack"
-
-$wheel_group = $::osfamily ? {
-  'Debian' => 'sudo',
-  default  => 'wheel',
 }
 
 user { $stack_user:

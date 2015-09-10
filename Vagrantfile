@@ -123,6 +123,9 @@ Vagrant.configure('2') do |config|
      '--pluginsync',
      '--disable_warnings=deprecations',
     ]
+    puppet.facter = {
+      'lsst_stack_user' => 'vagrant',
+    }
   end
 
   config.vm.provider :virtualbox do |provider, override|

@@ -175,3 +175,6 @@ Other useful commands
     vagrant halt <hostname>  # restart with vagrant up
     vagrant destroy -f
     vagrant destroy -f <hostname>
+
+
+    wget https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub
