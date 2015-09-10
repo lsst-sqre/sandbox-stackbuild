@@ -29,10 +29,10 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/centos-6.6'
+      override.vm.box = 'bento/centos-6.7'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'centos-6-5-x64'
+      provider.image = 'centos-6-7-x64'
     end
     define.vm.provider :aws do |provider, override|
       ci_hostname(hostname, provider)
@@ -55,7 +55,7 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/centos-7.0'
+      override.vm.box = 'bento/centos-7.1'
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-0-x64'
@@ -81,7 +81,7 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/fedora-22'
+      override.vm.box = 'bento/fedora-22'
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'fedora-22-x64'
