@@ -154,8 +154,8 @@ Vagrant.configure('2') do |config|
     override.vm.synced_folder '.', '/vagrant', :disabled => true
     #override.vm.synced_folder 'hieradata/', '/tmp/vagrant-puppet/hieradata'
     #override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
-    override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
-    provider.keypair_name = SSH_PUBLIC_KEY_NAME
+    override.ssh.private_key_path = "#{Dir.home}/.vagrant.d/insecure_private_key"
+    provider.keypair_name = "vagrant"
     provider.access_key_id = ENV['AWS_ACCESS_KEY_ID']
     provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
     provider.region = ENV['AWS_DEFAULT_REGION']
