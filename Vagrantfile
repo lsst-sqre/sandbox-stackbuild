@@ -1,5 +1,4 @@
 %w{
-  vagrant-hostmanager
   vagrant-librarian-puppet
   vagrant-puppet-install
 }.each do |plugin|
@@ -173,12 +172,6 @@ Vagrant.configure('2') do |config|
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
     config.librarian_puppet.placeholder_filename = ".gitkeep"
-  end
-
-  if Vagrant.has_plugin?("vagrant-hostmanager")
-    config.vm.provision :hostmanager
-    config.hostmanager.include_offline = true
-    config.hostmanager.ignore_private_ip = false
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")
