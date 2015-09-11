@@ -1,10 +1,14 @@
-%w{
+required_plugins = %w{
   vagrant-librarian-puppet
   vagrant-puppet-install
-}.each do |plugin|
-  unless Vagrant.has_plugin?(plugin)
-    raise "#{plugin} not installed"
-  end
+  vagrant-aws
+}
+
+plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+if not plugins_to_install.empty?
+  puts "Installing plugins: #{plugins_to_install.join(' ')}"
+  system "vagrant plugin install #{plugins_to_install.join(' ')}"
+  exec "vagrant #{ARGV.join(' ')}"
 end
 
 # generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
