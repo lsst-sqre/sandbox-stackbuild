@@ -35,6 +35,26 @@ case $::osfamily {
       'tree',
       'vim-enhanced'
     ]
+
+    if $::operatingsystemmajrelease == '6' {
+      $epel = $::operatingsystemmajrelease ? {
+        '6'     => 'epel-6-x86_64',
+        default => undef,
+      }
+
+      yumrepo { "rhscl-devtoolset-3-${epel}":
+        ensure   => 'present',
+        baseurl  => "https://www.softwarecollections.org/repos/rhscl/devtoolset-3/${epel}",
+        descr    => "Devtoolset-3 - ${epel}",
+        enabled  => '1',
+        gpgcheck => '0',
+      }
+
+      package { ['devtoolset-3-gcc', 'devtoolset-3-gcc-c++']:
+        ensure  => present,
+        require => Yumrepo["rhscl-devtoolset-3-${epel}"],
+      }
+    }
   }
   default: { fail() }
 }
