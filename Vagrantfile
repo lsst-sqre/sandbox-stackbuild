@@ -162,6 +162,11 @@ Vagrant.configure('2') do |config|
     provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
     provider.region = ENV['AWS_DEFAULT_REGION']
     provider.security_groups = ['sshonly']
+    if ENV['AWS_SUBNET_ID']
+      provider.subnet_id = ENV['AWS_SUBNET_ID']
+      # assume we don't have an accessible public IP
+      provider.ssh_host_attribute = :private_ip_address
+    end
     provider.instance_type = 'c4.2xlarge'
     provider.ebs_optimized = true
     provider.block_device_mapping = [{
