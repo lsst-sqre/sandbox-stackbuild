@@ -161,7 +161,11 @@ Vagrant.configure('2') do |config|
     provider.access_key_id = ENV['AWS_ACCESS_KEY_ID']
     provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
     provider.region = ENV['AWS_DEFAULT_REGION']
-    provider.security_groups = ['sshonly']
+    if ENV['AWS_SECURITY_GROUPS']
+      provider.security_groups = ENV['AWS_SECURITY_GROUPS'].strip.split(/\s+/)
+    else
+      provider.security_groups = ['sshonly']
+    end
     if ENV['AWS_SUBNET_ID']
       provider.subnet_id = ENV['AWS_SUBNET_ID']
       # assume we don't have an accessible public IP
