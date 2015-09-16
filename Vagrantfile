@@ -184,6 +184,8 @@ Vagrant.configure('2') do |config|
       'Ebs.DeleteOnTermination' => 'true',
     }]
     provider.tags = { 'Name' => "stackbuild" }
+    # attempt to stop hitting aws' RequestLimitExceeded - default is 2
+    provider.instance_check_interval = 10
   end
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
