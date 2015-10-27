@@ -48,7 +48,7 @@ Vagrant.configure('2') do |config|
       # provider.ami = 'ami-874b79b7'
 
       # packer built
-      provider.ami = 'ami-67e28202'
+      provider.ami = ENV['CENTOS6_AMI'] || 'ami-67e28202'
       provider.region = 'us-east-1'
     end
   end
@@ -74,7 +74,7 @@ Vagrant.configure('2') do |config|
       # provider.ami = 'ami-29576419'
 
       # packer built
-      provider.ami = 'ami-ffe3839a'
+      provider.ami = ENV['CENTOS7_AMI'] || 'ami-ffe3839a'
       provider.region = 'us-east-1'
     end
   end
