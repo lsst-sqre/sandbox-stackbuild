@@ -7,4 +7,7 @@ mod 'petems/swap_file', '~> 1.0'
 mod 'jhoblitt/sysstat', '~> 1.1'
 mod 'maestrodev/wget', '~> 1.7'
 
-mod 'jhoblitt/lsststack', :git => 'https://github.com/lsst-sqre/puppet-lsststack.git'
+#mod 'jhoblitt/lsststack', :git => 'https://github.com/lsst-sqre/puppet-lsststack.git'
+mod 'jhoblitt/lsststack',
+  :git => 'https://github.com/jhoblitt/puppet-lsststack.git',
+  :ref => 'feature/newinstall'

@@ -4,7 +4,7 @@ FORGE
     camptocamp-augeas (1.4.2)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     jhoblitt-sysstat (1.1.0)
-    maestrodev-wget (1.7.0)
+    maestrodev-wget (1.7.1)
     petems-swap_file (1.1.1)
       puppetlabs-stdlib (>= 3.2.0)
     puppetlabs-stdlib (4.9.0)
@@ -12,9 +12,9 @@ FORGE
     stahnma-epel (1.1.1)
 
 GIT
-  remote: https://github.com/lsst-sqre/puppet-lsststack.git
-  ref: master
-  sha: 4b376b0bfae70c4c0aef15e3f3c837395722a139
+  remote: https://github.com/jhoblitt/puppet-lsststack.git
+  ref: feature/newinstall
+  sha: 847182509bbb1b4562a12a6b650b7e0bdc73b1ff
   specs:
     jhoblitt-lsststack (0.1.0)
       maestrodev-wget (< 1.8.0, >= 1.7.0)
