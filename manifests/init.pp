@@ -35,12 +35,17 @@ class { '::lsststack':
   install_convenience => true,
 }
 
+# prune off the destination dir so ::lsststack::newinstall may declare it
+$dirtree = dirtree($lsst_stack_path)
+$d = delete_at($dirtree, -1) # XXX replace with array slice nder puppet 4.x
+ensure_resource('file', $d, {'ensure' => 'directory'})
+
 ::lsststack::newinstall { $stack_user:
   user         => $stack_user,
   manage_user  => false,
   group        => $stack_group,
   manage_group => false,
-  stack_path   => $::stack_path,
+  stack_path   => $::lsst_stack_path,
 }
 
 $memoryrequired = to_bytes('16 GB')

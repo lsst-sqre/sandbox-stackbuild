@@ -7,14 +7,15 @@ FORGE
     maestrodev-wget (1.7.1)
     petems-swap_file (1.1.1)
       puppetlabs-stdlib (>= 3.2.0)
+    pltraining-dirtree (0.2.2)
     puppetlabs-stdlib (4.9.0)
     puppetlabs-vcsrepo (1.2.0)
     stahnma-epel (1.1.1)
 
 GIT
   remote: https://github.com/jhoblitt/puppet-lsststack.git
-  ref: feature/newinstall
-  sha: 847182509bbb1b4562a12a6b650b7e0bdc73b1ff
+  ref: e23c5f0a735263376548fba1bbf9e3f1e264bea7
+  sha: e23c5f0a735263376548fba1bbf9e3f1e264bea7
   specs:
     jhoblitt-lsststack (0.1.0)
       maestrodev-wget (< 1.8.0, >= 1.7.0)
@@ -27,6 +28,7 @@ DEPENDENCIES
   jhoblitt-sysstat (~> 1.1)
   maestrodev-wget (~> 1.7)
   petems-swap_file (~> 1.0)
+  pltraining-dirtree (~> 0.2.2)
   puppetlabs-stdlib (>= 0)
   stahnma-epel (~> 1.1)
 
