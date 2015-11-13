@@ -129,6 +129,7 @@ Vagrant.configure('2') do |config|
     ]
     puppet.facter = {
       'lsst_stack_user' => 'vagrant',
+      'lsst_stack_path' => '/opt/lsst/software/stack',
     }
   end
 
@@ -179,7 +180,7 @@ Vagrant.configure('2') do |config|
     provider.ebs_optimized = true
     provider.block_device_mapping = [{
       'DeviceName'              => '/dev/sda1',
-      'Ebs.VolumeSize'          => 40,
+      'Ebs.VolumeSize'          => 100,
       'Ebs.VolumeType'          => 'gp2',
       'Ebs.DeleteOnTermination' => 'true',
     }]
