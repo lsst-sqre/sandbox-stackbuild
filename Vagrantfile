@@ -35,7 +35,8 @@ Vagrant.configure('2') do |config|
       override.vm.box = 'bento/centos-6.7'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'centos-6-7-x64'
+      # XXX the slug name for 6.7 appears to be centos-6-5-x64
+      provider.image = 'centos-6-5-x64'
     end
     define.vm.provider :aws do |provider, override|
       ci_hostname(hostname, provider)
