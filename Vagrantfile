@@ -207,7 +207,7 @@ end
 
 # concept from:
 # http://ryan.muller.io/devops/2014/03/26/chef-vagrant-and-digital-ocean.html
-SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqreuser'
+SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqre'
 if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
   do_c = "#{root}/do/credentials.rb"
