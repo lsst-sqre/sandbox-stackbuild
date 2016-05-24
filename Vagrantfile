@@ -143,7 +143,7 @@ Vagrant.configure('2') do |config|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
-    override.ssh.username = 'lsstsw'
+    override.ssh.username = 'vagrant'
     override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
@@ -181,7 +181,7 @@ Vagrant.configure('2') do |config|
     provider.ebs_optimized = true
     provider.block_device_mapping = [{
       'DeviceName'              => '/dev/sda1',
-      'Ebs.VolumeSize'          => 100,
+      'Ebs.VolumeSize'          => 200,
       'Ebs.VolumeType'          => 'gp2',
       'Ebs.DeleteOnTermination' => 'true',
     }]
