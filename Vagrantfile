@@ -75,20 +75,20 @@ Vagrant.configure('2') do |config|
       # provider.ami = 'ami-29576419'
 
       # packer built
-      provider.ami = ENV['CENTOS7_AMI'] || 'ami-ffe3839a'
+      provider.ami = ENV['CENTOS7_AMI'] || 'ami-1bf4d571'
       provider.region = 'us-east-1'
     end
   end
 
-  config.vm.define 'f22' do |define|
-    hostname = gen_hostname('f22')
+  config.vm.define 'f23' do |define|
+    hostname = gen_hostname('f23')
     define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/fedora-22'
+      override.vm.box = 'bento/fedora-23'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-22-x64'
+      provider.image = 'fedora-23-x64'
     end
   end
 
