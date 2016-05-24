@@ -40,6 +40,15 @@ $dirtree = dirtree($lsst_stack_path)
 $d = delete_at($dirtree, -1) # XXX replace with array slice nder puppet 4.x
 ensure_resource('file', $d, {'ensure' => 'directory'})
 
+if $::osfamily == 'RedHat' and $::operatingsystemmajrelease == '6' {
+  file_line { 'enable devtoolset-3':
+    line    => '. /opt/rh/devtoolset-3/enable',
+    path    => "/home/${stack_user}/.bashrc",
+    require => User[$stack_user],
+    before  => Lsststack::Newinstall[$stack_user],
+  }
+}
+
 ::lsststack::newinstall { $stack_user:
   user         => $stack_user,
   manage_user  => false,
