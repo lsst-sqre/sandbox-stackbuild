@@ -59,10 +59,10 @@ Vagrant.configure('2') do |config|
     define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/centos-7.1'
+      override.vm.box = 'bento/centos-7.2'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'centos-7-0-x64'
+      provider.image = 'centos-7-2-x64'
     end
     define.vm.provider :aws do |provider, override|
       ci_hostname(hostname, provider)
