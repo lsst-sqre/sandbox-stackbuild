@@ -131,7 +131,6 @@ Vagrant plugins
 
 These are required:
 
-* vagrant-hostmanager
 * vagrant-puppet-install
 * vagrant-librarian-puppet '~> 0.9.0'
 
@@ -150,12 +149,11 @@ Suggested for usage with virtualbox:
 Sandbox
 -------
 
-    vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-puppet-install
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
     vagrant plugin install vagrant-cachier
 
-    vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.7.3'
+    vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.9.0'
     vagrant plugin install vagrant-aws --plugin-version '~> 0.6.0'
 
     # sanity check
@@ -163,7 +161,8 @@ Sandbox
 
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
-    vagrant up --provider=digital_ocean
+    export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
+    vagrant up
 
 Other useful commands
 ---------------------
@@ -177,3 +176,6 @@ Other useful commands
     vagrant halt <hostname>  # restart with vagrant up
     vagrant destroy -f
     vagrant destroy -f <hostname>
+
+
+    wget https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub

@@ -2,54 +2,22 @@ include ::stdlib
 include ::augeas
 include ::sysstat
 include ::wget
-include ::lsststack
 
-Class['lsststack'] -> File['newinstall.sh']
-
-case $::osfamily {
-  'Debian': {
-    $convience_pkgs = [
-      'screen',
-      'tree',
-      'vim'
-    ]
-  }
-  'RedHat': {
-    include ::epel
-    Class['epel'] -> Package<| provider == 'yum' |>
-
-    $convience_pkgs = [
-      'screen',
-      'tree',
-      'vim-enhanced'
-    ]
-  }
-  default: { fail() }
+$stack_user  = $::lsst_stack_user ? {
+  #undef   => 'lsstsw',
+  undef   => 'vagrant',
+  default => $::lsst_stack_user,
 }
-
-package { $convience_pkgs: }
-
-$memoryrequired = to_bytes('16 GB')
-$swaprequired = $memoryrequired - to_bytes($::memorysize)
-
-if $swaprequired >= to_bytes('1 GB') {
-  $ensure_swap = 'present'
-} else {
-  $ensure_swap = 'absent'
-}
-
-class { 'swap_file':
-  ensure       => $ensure_swap,
-  swapfilesize => $swaprequired,
-}
-
-$stack_user  = 'lsstsw'
-$stack_group = 'lsstsw'
-$stack_path = "/home/${stack_group}/stack"
+$stack_group = $stack_user
 
 $wheel_group = $::osfamily ? {
   'Debian' => 'sudo',
   default  => 'wheel',
+}
+
+if $::osfamily == 'RedHat' {
+  include ::epel
+  Class['epel'] -> Package<| provider == 'yum' |>
 }
 
 user { $stack_user:
@@ -63,46 +31,42 @@ group { $stack_group:
   ensure => present,
 }
 
-$sshkey_parts = split($::vagrant_sshkey, '\s+')
-
-ssh_authorized_key { $sshkey_parts[2]:
-  user => $stack_user,
-  type => $sshkey_parts[0],
-  key  => $sshkey_parts[1],
+class { '::lsststack':
+  install_convenience => true,
 }
 
-file { 'stack':
-  ensure  => directory,
-  owner   => $stack_user,
-  group   => $stack_group,
-  mode    => '0755',
-  path    => $stack_path,
-  require => Class['swap_file'],
+# prune off the destination dir so ::lsststack::newinstall may declare it
+$dirtree = dirtree($lsst_stack_path)
+$d = delete_at($dirtree, -1) # XXX replace with array slice nder puppet 4.x
+ensure_resource('file', $d, {'ensure' => 'directory'})
+
+if $::osfamily == 'RedHat' and $::operatingsystemmajrelease == '6' {
+  file_line { 'enable devtoolset-3':
+    line    => '. /opt/rh/devtoolset-3/enable',
+    path    => "/home/${stack_user}/.bashrc",
+    require => User[$stack_user],
+    before  => Lsststack::Newinstall[$stack_user],
+  }
 }
 
-wget::fetch { 'newinstall.sh':
-  source      => 'https://sw.lsstcorp.org/eupspkg/newinstall.sh',
-  destination => "${stack_path}/newinstall.sh",
-  execuser    => $stack_user,
-  timeout     => 60,
-  verbose     => true,
-  require     => File['stack'],
+::lsststack::newinstall { $stack_user:
+  user         => $stack_user,
+  manage_user  => false,
+  group        => $stack_group,
+  manage_group => false,
+  stack_path   => $::lsst_stack_path,
 }
 
-file { 'newinstall.sh':
-  mode    => '0755',
-  path    => "${stack_path}/newinstall.sh",
-  require => Wget::Fetch['newinstall.sh'],
+$memoryrequired = to_bytes('16 GB')
+$swaprequired = $memoryrequired - to_bytes($::memorysize)
+
+if $swaprequired >= to_bytes('1 GB') {
+  $ensure_swap = 'present'
+} else {
+  $ensure_swap = 'absent'
 }
 
-exec { 'newinstall.sh':
-  environment => ["PWD=${stack_path}"],
-  command     => 'echo -e "yes\nyes" | newinstall.sh -c',
-  path        => ['/bin', '/usr/bin', $stack_path],
-  cwd         => $stack_path,
-  user        => $stack_user,
-  logoutput   => true,
-  creates     => "${stack_path}/loadLSST.zsh",
-  timeout     => 900,
-  require     => File['newinstall.sh'],
+class { 'swap_file':
+  ensure       => $ensure_swap,
+  swapfilesize => $swaprequired,
 }

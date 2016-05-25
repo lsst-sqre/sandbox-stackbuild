@@ -1,0 +1,34 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    camptocamp-augeas (1.4.2)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    jhoblitt-sysstat (1.1.0)
+    maestrodev-wget (1.7.1)
+    petems-swap_file (1.0.1)
+      puppetlabs-stdlib (>= 3.2.0)
+    pltraining-dirtree (0.2.2)
+    puppetlabs-stdlib (4.9.0)
+    puppetlabs-vcsrepo (1.2.0)
+    stahnma-epel (1.1.1)
+
+GIT
+  remote: https://github.com/lsst-sqre/puppet-lsststack.git
+  ref: 882d61e782d3fd9bc8ba8e1b6c5c74ff7d6fa467
+  sha: 882d61e782d3fd9bc8ba8e1b6c5c74ff7d6fa467
+  specs:
+    jhoblitt-lsststack (0.1.0)
+      maestrodev-wget (< 1.8.0, >= 1.7.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
+      puppetlabs-vcsrepo (< 1.3.0, >= 1.2.0)
+
+DEPENDENCIES
+  camptocamp-augeas (~> 1.4)
+  jhoblitt-lsststack (>= 0)
+  jhoblitt-sysstat (~> 1.1)
+  maestrodev-wget (~> 1.7)
+  petems-swap_file (~> 1.0.1)
+  pltraining-dirtree (~> 0.2.2)
+  puppetlabs-stdlib (>= 0)
+  stahnma-epel (~> 1.1)
+

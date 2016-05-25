@@ -13,4 +13,3 @@ spec/fixtures/modules/
 tmp
 modules
 .librarian
-Puppetfile.lock

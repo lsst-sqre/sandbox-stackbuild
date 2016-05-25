@@ -1,11 +1,14 @@
-%w{
-  vagrant-hostmanager
+required_plugins = %w{
   vagrant-librarian-puppet
   vagrant-puppet-install
-}.each do |plugin|
-  unless Vagrant.has_plugin?(plugin)
-    raise "#{plugin} not installed"
-  end
+  vagrant-aws
+}
+
+plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+if not plugins_to_install.empty?
+  puts "Installing plugins: #{plugins_to_install.join(' ')}"
+  system "vagrant plugin install #{plugins_to_install.join(' ')}"
+  exec "vagrant #{ARGV.join(' ')}"
 end
 
 # generate a psuedo unique hostname to avoid droplet name/aws tag collisions.
@@ -15,18 +18,29 @@ end
 def gen_hostname(boxname)
   "#{ENV['USER']}-#{(0...3).map { (65 + rand(26)).chr }.join.downcase}-#{boxname}"
 end
+def ci_hostname(hostname, provider)
+  provider.user_data = <<-EOS
+#cloud-config
+hostname: #{hostname}
+manage_etc_hosts: localhost
+  EOS
+end
 
 Vagrant.configure('2') do |config|
   config.vm.define 'el6', primary: true do |define|
-    define.vm.hostname = gen_hostname('el6')
+    hostname = gen_hostname('el6')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/centos-6.6'
+      override.vm.box = 'bento/centos-6.7'
     end
     define.vm.provider :digital_ocean do |provider, override|
+      # XXX the slug name for 6.7 appears to be centos-6-5-x64
       provider.image = 'centos-6-5-x64'
     end
     define.vm.provider :aws do |provider, override|
+      ci_hostname(hostname, provider)
+
       # base centos 6 ami
       # provider.ami = 'ami-81d092b1'
       # override.ssh.username = 'root'
@@ -34,22 +48,25 @@ Vagrant.configure('2') do |config|
       # packer rebuild of base ami
       # provider.ami = 'ami-874b79b7'
 
-      # vagrant burned ami
-      provider.ami = 'ami-174f7d27'
-      provider.region = 'us-west-2'
+      # packer built
+      provider.ami = ENV['CENTOS6_AMI'] || 'ami-67e28202'
+      provider.region = 'us-east-1'
     end
   end
 
   config.vm.define 'el7' do |define|
-    define.vm.hostname = gen_hostname('el7')
+    hostname = gen_hostname('el7')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/centos-7.0'
+      override.vm.box = 'bento/centos-7.2'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'centos-7-0-x64'
+      provider.image = 'centos-7-2-x64'
     end
     define.vm.provider :aws do |provider, override|
+      ci_hostname(hostname, provider)
+
       # base centos 7 ami
       # provider.ami = 'ami-c7d092f7'
       # override.ssh.username = 'centos'
@@ -57,20 +74,21 @@ Vagrant.configure('2') do |config|
       # packer build of base ami
       # provider.ami = 'ami-29576419'
 
-      # vagrant burned ami
-      provider.ami = 'ami-cd5566fd'
-      provider.region = 'us-west-2'
+      # packer built
+      provider.ami = ENV['CENTOS7_AMI'] || 'ami-1bf4d571'
+      provider.region = 'us-east-1'
     end
   end
 
-  config.vm.define 'f21' do |define|
-    define.vm.hostname = gen_hostname('f21')
+  config.vm.define 'f23' do |define|
+    hostname = gen_hostname('f23')
+    define.vm.hostname = hostname
 
     define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'chef/fedora-21'
+      override.vm.box = 'bento/fedora-23'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-21-x64'
+      provider.image = 'fedora-23-x64'
     end
   end
 
@@ -97,7 +115,7 @@ Vagrant.configure('2') do |config|
   end
 
   # setup the remote repo needed to install a current version of puppet
-  config.puppet_install.puppet_version = '3.7.5'
+  config.puppet_install.puppet_version = '3.8.2'
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
@@ -111,7 +129,8 @@ Vagrant.configure('2') do |config|
      '--disable_warnings=deprecations',
     ]
     puppet.facter = {
-      "vagrant_sshkey" => File.read(SSH_PUBLIC_KEY_PATH),
+      'lsst_stack_user' => 'vagrant',
+      'lsst_stack_path' => '/opt/lsst/software/stack',
     }
   end
 
@@ -124,7 +143,7 @@ Vagrant.configure('2') do |config|
     override.vm.box = 'digital_ocean'
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
-    override.ssh.username = 'lsstsw'
+    override.ssh.username = 'vagrant'
     override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
 
@@ -141,27 +160,38 @@ Vagrant.configure('2') do |config|
     # http://blog.damore.it/2015/01/aws-vagrant-no-host-ip-was-given-to.html
     override.nfs.functional = false
     override.vm.synced_folder '.', '/vagrant', :disabled => true
-    override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
-    provider.keypair_name = "sqre"
-    provider.access_key_id = AWS_ACCESS_KEY
-    provider.secret_access_key = AWS_SECRET_KEY
-    provider.region = 'us-west-2'
-    provider.security_groups = ['sshonly']
-    #provider.instance_type = 'm3.medium'
+    #override.vm.synced_folder 'hieradata/', '/tmp/vagrant-puppet/hieradata'
+    #override.ssh.private_key_path = "#{Dir.home}/.sqre/ssh/id_rsa_sqre"
+    override.ssh.private_key_path = "#{Dir.home}/.vagrant.d/insecure_private_key"
+    provider.keypair_name = "vagrant"
+    provider.access_key_id = ENV['AWS_ACCESS_KEY_ID']
+    provider.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+    provider.region = ENV['AWS_DEFAULT_REGION']
+    if ENV['AWS_SECURITY_GROUPS']
+      provider.security_groups = ENV['AWS_SECURITY_GROUPS'].strip.split(/\s+/)
+    else
+      provider.security_groups = ['sshonly']
+    end
+    if ENV['AWS_SUBNET_ID']
+      provider.subnet_id = ENV['AWS_SUBNET_ID']
+      # assume we don't have an accessible public IP
+      provider.ssh_host_attribute = :private_ip_address
+    end
     provider.instance_type = 'c4.2xlarge'
     provider.ebs_optimized = true
-    provider.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 40 }]
+    provider.block_device_mapping = [{
+      'DeviceName'              => '/dev/sda1',
+      'Ebs.VolumeSize'          => 200,
+      'Ebs.VolumeType'          => 'gp2',
+      'Ebs.DeleteOnTermination' => 'true',
+    }]
     provider.tags = { 'Name' => "stackbuild" }
+    # attempt to stop hitting aws' RequestLimitExceeded - default is 2
+    #provider.instance_check_interval = 10
   end
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
     config.librarian_puppet.placeholder_filename = ".gitkeep"
-  end
-
-  if Vagrant.has_plugin?("vagrant-hostmanager")
-    config.vm.provision :hostmanager
-    config.hostmanager.include_offline = true
-    config.hostmanager.ignore_private_ip = false
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")
@@ -178,7 +208,7 @@ end
 
 # concept from:
 # http://ryan.muller.io/devops/2014/03/26/chef-vagrant-and-digital-ocean.html
-SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqreuser'
+SANDBOX_GROUP = ENV['SQRE_SANDBOX_GROUP'] || 'sqre'
 if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   root="#{Dir.home}/.#{SANDBOX_GROUP}"
   do_c = "#{root}/do/credentials.rb"
@@ -186,13 +216,15 @@ if File.exist? "#{Dir.home}/.#{SANDBOX_GROUP}"
   load do_c if File.exists? do_c
   load aws_c if File.exists? aws_c
   SSH_PRIVATE_KEY_PATH="#{root}/ssh/id_rsa_#{SANDBOX_GROUP}"
-  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
   SSH_PUBLIC_KEY_NAME=SANDBOX_GROUP
 else
-  DO_API_TOKEN="<digitalocean api token>"
-  SSH_PRIVATE_KEY_PATH="#{ENV['HOME']}/.ssh/id_rsa"
-  SSH_PUBLIC_KEY_PATH="#{SSH_PRIVATE_KEY_PATH}.pub"
-  SSH_PUBLIC_KEY_NAME=ENV['USER']
+  if ENV['DO_API_TOKEN']
+    DO_API_TOKEN = ENV['DO_API_TOKEN']
+  else
+    DO_API_TOKEN = '<api key...>'
+  end
+  SSH_PRIVATE_KEY_PATH="#{Dir.home}/.vagrant.d/insecure_private_key"
+  SSH_PUBLIC_KEY_NAME='vagrant'
 end
 
 # -*- mode: ruby -*-
