@@ -10,5 +10,5 @@ mod 'pltraining/dirtree', '~> 0.2.2'
 
 #mod 'jhoblitt/lsststack', :git => 'https://github.com/lsst-sqre/puppet-lsststack.git'
 mod 'jhoblitt/lsststack',
-  :git => 'https://github.com/jhoblitt/puppet-lsststack.git',
-  :ref => 'e23c5f0a735263376548fba1bbf9e3f1e264bea7'
+  :git => 'https://github.com/lsst-sqre/puppet-lsststack.git',
+  :ref => '882d61e782d3fd9bc8ba8e1b6c5c74ff7d6fa467'

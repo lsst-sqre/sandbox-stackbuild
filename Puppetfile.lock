@@ -13,9 +13,9 @@ FORGE
     stahnma-epel (1.1.1)
 
 GIT
-  remote: https://github.com/jhoblitt/puppet-lsststack.git
-  ref: e23c5f0a735263376548fba1bbf9e3f1e264bea7
-  sha: e23c5f0a735263376548fba1bbf9e3f1e264bea7
+  remote: https://github.com/lsst-sqre/puppet-lsststack.git
+  ref: 882d61e782d3fd9bc8ba8e1b6c5c74ff7d6fa467
+  sha: 882d61e782d3fd9bc8ba8e1b6c5c74ff7d6fa467
   specs:
     jhoblitt-lsststack (0.1.0)
       maestrodev-wget (< 1.8.0, >= 1.7.0)
