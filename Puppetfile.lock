@@ -10,8 +10,6 @@ FORGE
     pltraining-dirtree (0.2.2)
     puppetlabs-stdlib (4.18.0)
     puppetlabs-vcsrepo (1.2.0)
-    stahnma-epel (1.2.2)
-      puppetlabs-stdlib (>= 3.0.0)
 
 GIT
   remote: https://github.com/lsst-sqre/puppet-lsststack.git
@@ -31,5 +29,4 @@ DEPENDENCIES
   petems-swap_file (~> 1.0.1)
   pltraining-dirtree (~> 0.2.2)
   puppetlabs-stdlib (>= 0)
-  stahnma-epel (~> 1.1)
 

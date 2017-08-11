@@ -15,9 +15,10 @@ $wheel_group = $::osfamily ? {
   default  => 'wheel',
 }
 
-if $::osfamily == 'RedHat' {
-  include ::epel
-  Class['epel'] -> Package<| provider == 'yum' |>
+if $::osfamily == 'RedHat' and $::operatingsystem != 'Fedora' {
+  package { 'epel-release':
+    ensure => latest,
+  } -> Package<| provider == 'yum' |>
 }
 
 user { $stack_user:
