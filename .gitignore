@@ -1,5 +1,5 @@
 .bundle
-Gemfile.lock
+environments/**/modules
 *.orig
 *.patch
 pkg/
@@ -8,8 +8,6 @@ pkg/
 spec/fixtures/manifests/
 spec/fixtures/modules/
 *.swp
-.vagrant
-.tmp
 tmp
-modules
-.librarian
+.tmp
+.vagrant

@@ -1,7 +1,6 @@
 required_plugins = %w{
   vagrant-librarian-puppet
   vagrant-puppet-install
-  vagrant-aws
 }
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
@@ -36,7 +35,7 @@ Vagrant.configure('2') do |config|
     end
     define.vm.provider :digital_ocean do |provider, override|
       # XXX the slug name for 6.7 appears to be centos-6-5-x64
-      provider.image = 'centos-6-5-x64'
+      provider.image = 'centos-6-x64'
     end
     define.vm.provider :aws do |provider, override|
       ci_hostname(hostname, provider)
@@ -62,7 +61,7 @@ Vagrant.configure('2') do |config|
       override.vm.box = 'bento/centos-7.2'
     end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'centos-7-2-x64'
+      provider.image = 'centos-7-x64'
     end
     define.vm.provider :aws do |provider, override|
       ci_hostname(hostname, provider)
@@ -80,26 +79,12 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'f23' do |define|
-    hostname = gen_hostname('f23')
+  config.vm.define 'f25' do |define|
+    hostname = gen_hostname('f25')
     define.vm.hostname = hostname
 
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/fedora-23'
-    end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-23-x64'
-    end
-  end
-
-  config.vm.define 'u12' do |define|
-    define.vm.hostname = gen_hostname('u12')
-
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'ubuntu/precise64'
-    end
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-12-04-x64'
+      provider.image = 'fedora-25-x64'
     end
   end
 
@@ -114,18 +99,29 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  # setup the remote repo needed to install a current version of puppet
-  config.puppet_install.puppet_version = '3.8.2'
+  config.vm.define 'u16' do |define|
+    define.vm.hostname = gen_hostname('u16')
 
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
-    puppet.module_path = "modules"
-    puppet.manifest_file = "init.pp"
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-16-04-x64'
+    end
+  end
+
+  # setup the remote repo needed to install a current version of puppet
+  config.puppet_install.puppet_version = '4.10.6'
+
+  config.vm.provision "puppet", type: :puppet do |puppet|
+    #puppet.hiera_config_path = "hiera.yaml"
+    puppet.environment_path  = "environments"
+    puppet.environment       = "stackbuild"
+    puppet.manifests_path    = "environments/stackbuild/manifests"
+    puppet.manifest_file     = "default.pp"
+
     puppet.options = [
      '--verbose',
+     '--trace',
      '--report',
      '--show_diff',
-     '--pluginsync',
      '--disable_warnings=deprecations',
     ]
     puppet.facter = {
@@ -192,6 +188,7 @@ Vagrant.configure('2') do |config|
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
     config.librarian_puppet.placeholder_filename = ".gitkeep"
+    config.librarian_puppet.puppetfile_dir = "environments/stackbuild/modules"
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")

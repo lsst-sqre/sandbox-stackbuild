@@ -19,7 +19,7 @@ SQRE credentials
 ----------------
 
     cd ~
-    git clone ~/Dropbox/Josh-Frossie-share/git/sqre.git .sqre
+    git clone ~/Dropbox/lsst-sqre/git/sqre.git .sqre
     chmod 0700 .sqre
     ls -lad .sqre
     export SQRE_SANDBOX_GROUP=sqre
@@ -162,6 +162,8 @@ Sandbox
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
     export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
+    bundle install
+    bundle exec rake
     vagrant up
 
 Other useful commands

@@ -15,9 +15,10 @@ $wheel_group = $::osfamily ? {
   default  => 'wheel',
 }
 
-if $::osfamily == 'RedHat' {
-  include ::epel
-  Class['epel'] -> Package<| provider == 'yum' |>
+if $::osfamily == 'RedHat' and $::operatingsystem != 'Fedora' {
+  package { 'epel-release':
+    ensure => latest,
+  } -> Package<| provider == 'yum' |>
 }
 
 user { $stack_user:
@@ -32,7 +33,10 @@ group { $stack_group:
 }
 
 class { '::lsststack':
-  install_convenience => true,
+  install_convenience => $operatingsystem ? {
+    'Fedora' => false,
+    default  => true,
+  },
 }
 
 # prune off the destination dir so ::lsststack::newinstall may declare it
