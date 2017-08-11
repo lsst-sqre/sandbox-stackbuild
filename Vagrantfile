@@ -115,17 +115,20 @@ Vagrant.configure('2') do |config|
   end
 
   # setup the remote repo needed to install a current version of puppet
-  config.puppet_install.puppet_version = '3.8.2'
+  config.puppet_install.puppet_version = '4.8.1'
 
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
-    puppet.module_path = "modules"
-    puppet.manifest_file = "init.pp"
+  config.vm.provision "puppet", type: :puppet do |puppet|
+    #puppet.hiera_config_path = "hiera.yaml"
+    puppet.environment_path  = "environments"
+    puppet.environment       = "stackbuild"
+    puppet.manifests_path    = "environments/stackbuild/manifests"
+    puppet.manifest_file     = "default.pp"
+
     puppet.options = [
      '--verbose',
+     '--trace',
      '--report',
      '--show_diff',
-     '--pluginsync',
      '--disable_warnings=deprecations',
     ]
     puppet.facter = {
@@ -192,6 +195,7 @@ Vagrant.configure('2') do |config|
 
   if Vagrant.has_plugin?('vagrant-librarian-puppet')
     config.librarian_puppet.placeholder_filename = ".gitkeep"
+    config.librarian_puppet.puppetfile_dir = "environments/stackbuild/modules"
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")
