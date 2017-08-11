@@ -33,7 +33,10 @@ group { $stack_group:
 }
 
 class { '::lsststack':
-  install_convenience => true,
+  install_convenience => $operatingsystem ? {
+    'Fedora' => false,
+    default  => true,
+  },
 }
 
 # prune off the destination dir so ::lsststack::newinstall may declare it
