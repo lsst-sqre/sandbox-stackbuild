@@ -88,17 +88,6 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'u12' do |define|
-    define.vm.hostname = gen_hostname('u12')
-
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'ubuntu/precise64'
-    end
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-12-04-x64'
-    end
-  end
-
   config.vm.define 'u14' do |define|
     define.vm.hostname = gen_hostname('u14')
 
@@ -107,6 +96,14 @@ Vagrant.configure('2') do |config|
     end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-14-04-x64'
+    end
+  end
+
+  config.vm.define 'u16' do |define|
+    define.vm.hostname = gen_hostname('u16')
+
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-16-04-x64'
     end
   end
 
