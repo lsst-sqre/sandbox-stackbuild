@@ -25,10 +25,12 @@ GEM
     locale (2.1.2)
     minitar (0.6.1)
     multipart-post (2.0.0)
-    puppet (4.8.2)
+    puppet (4.10.6)
       facter (> 2.0, < 4)
+      gettext-setup (>= 0.10, < 1)
       hiera (>= 2.0, < 4)
       json_pure (~> 1.8)
+      locale (~> 2.1)
     puppet_forge (2.2.7)
       faraday (~> 0.9.0)
       faraday_middleware (>= 0.9.0, < 0.11.0)
@@ -47,7 +49,7 @@ PLATFORMS
 
 DEPENDENCIES
   librarian-puppet (~> 2.2.3)
-  puppet (~> 4.8.1)
+  puppet (~> 4.10.6)
   rake
 
 BUNDLED WITH
