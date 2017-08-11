@@ -162,6 +162,8 @@ Sandbox
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
     export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
+    bundle install
+    bundle exec rake
     vagrant up
 
 Other useful commands
