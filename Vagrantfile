@@ -1,7 +1,6 @@
 required_plugins = %w{
   vagrant-librarian-puppet
   vagrant-puppet-install
-  vagrant-aws
 }
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
