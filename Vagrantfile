@@ -79,15 +79,12 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'f23' do |define|
-    hostname = gen_hostname('f23')
+  config.vm.define 'f25' do |define|
+    hostname = gen_hostname('f25')
     define.vm.hostname = hostname
 
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/fedora-23'
-    end
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-23-x64'
+      provider.image = 'fedora-25-x64'
     end
   end
 
