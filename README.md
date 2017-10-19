@@ -4,7 +4,7 @@ LSST Stack build sandbox
 Prerequisites
 -------------
 
-* Vagrant 1.7.x
+* Vagrant 1.9.x
 * `git` - needed to clone this repo
 
 Suggested
