@@ -50,11 +50,11 @@ $ which VirtualBox
 ### Install Vagrant
 
 ```shell
-wget https://releases.hashicorp.com/vagrant/1.9.8/vagrant_1.9.8_x86_64.dmg
-hdiutil mount vagrant_1.9.8_x86_64.dmg
+wget https://releases.hashicorp.com/vagrant/2.0.3/vagrant_2.0.3_x86_64.dmg
+hdiutil mount vagrant_2.0.3_x86_64.dmg
 sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target /
 hdiutil unmount /Volumes/Vagrant
-rm vagrant_1.9.8_x86_64.dmg
+rm vagrant_2.0.3_x86_64.dmg
 ```
 
 ```shell
