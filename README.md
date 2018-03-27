@@ -62,6 +62,7 @@ rm vagrant_2.0.3_x86_64.dmg
 $ which vagrant
 /usr/bin/vagrant
 ```
+
 ### How to accept the Xcode License from the CLI
 
 This step can be skipped if you have already accepted the Xcode license or
@@ -73,15 +74,18 @@ If you see a warning like the following:
 $ git
 
 
-Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.
+Agreeing to the Xcode/iOS license requires admin privileges, please re-run as
+root via sudo.
 ```
 
 Run this command:
+
 ```shell
 sudo xcodebuild -license accept
 ```
 
 Then verify that the license warning is gone:
+
 ```shell
 # sanity check
 $ git --version
@@ -109,9 +113,9 @@ sudo usermod -a -G vboxusers $USER
 $ which VirtualBox
 /usr/bin/VirtualBox
 $ lsmod | grep -i box
-vboxpci                23256  0 
-vboxnetadp             25670  0 
-vboxnetflt             27605  0 
+vboxpci                23256  0
+vboxnetadp             25670  0
+vboxnetflt             27605  0
 vboxdrv               397320  6 vboxnetadp,vboxnetflt,vboxpci
 ```
 
@@ -122,6 +126,7 @@ sudo yum install -y https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_6
 ```
 
 Sanity check
+
 ```shell
 /usr/bin/vagrant
 ```
@@ -168,6 +173,7 @@ Sandbox
 
 Other useful commands
 ---------------------
+
     vagrant up --provider=virtual_box
     vagrant up --provider=digital_ocean
     vagrant up <hostname> --provider=digital_ocean
