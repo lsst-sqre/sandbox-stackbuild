@@ -79,12 +79,12 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'f25' do |define|
-    hostname = gen_hostname('f25')
+  config.vm.define 'f27' do |define|
+    hostname = gen_hostname('f27')
     define.vm.hostname = hostname
 
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'fedora-25-x64'
+      provider.image = 'fedora-27-x64'
     end
   end
 
