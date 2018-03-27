@@ -137,6 +137,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider :digital_ocean do |provider, override|
     override.vm.box = 'digital_ocean'
+    override.nfs.functional = false
     override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     # it appears to blow up if you set the username to vagrant...
     override.ssh.username = 'vagrant'
