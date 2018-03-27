@@ -151,15 +151,13 @@ Suggested for usage with virtualbox:
 
 * vagrant-cachier
 
-Sandbox
--------
+DigitalOcean example
+--------------------
 
     vagrant plugin install vagrant-puppet-install
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
-    vagrant plugin install vagrant-cachier
 
     vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.9.0'
-    vagrant plugin install vagrant-aws --plugin-version '~> 0.6.0'
 
     # sanity check
     vagrant plugin list
@@ -169,7 +167,7 @@ Sandbox
     export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
     bundle install
     bundle exec rake
-    vagrant up
+    vagrant up el7
 
 Other useful commands
 ---------------------
