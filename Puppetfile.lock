@@ -3,30 +3,36 @@ FORGE
   specs:
     camptocamp-augeas (1.6.0)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    herculesteam-augeasproviders_core (2.1.4)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    herculesteam-augeasproviders_sysctl (2.2.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
     jhoblitt-sysstat (1.1.0)
     maestrodev-wget (1.7.3)
-    petems-swap_file (1.0.1)
-      puppetlabs-stdlib (>= 3.2.0)
-    pltraining-dirtree (0.2.2)
-    puppetlabs-stdlib (4.18.0)
+    petems-swap_file (4.0.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+      herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.7.0)
+    pltraining-dirtree (0.3.0)
+    puppetlabs-stdlib (4.25.0)
     puppetlabs-vcsrepo (1.2.0)
 
 GIT
   remote: https://github.com/lsst-sqre/puppet-lsststack.git
-  ref: 6b15e727dde6fe792247f6a56d3c3e434cc481d3
-  sha: 6b15e727dde6fe792247f6a56d3c3e434cc481d3
+  ref: f8ce1d8b435f53eb9f4a591f4572378988fb0d13
+  sha: f8ce1d8b435f53eb9f4a591f4572378988fb0d13
   specs:
-    jhoblitt-lsststack (0.1.0)
+    lsstsqre-lsststack (0.1.0)
       maestrodev-wget (< 1.8.0, >= 1.7.3)
       puppetlabs-stdlib (< 5.0.0, >= 4.6.0)
       puppetlabs-vcsrepo (< 1.3.0, >= 1.2.0)
 
 DEPENDENCIES
-  camptocamp-augeas (~> 1.4)
-  jhoblitt-lsststack (>= 0)
-  jhoblitt-sysstat (~> 1.1)
-  maestrodev-wget (~> 1.7)
-  petems-swap_file (~> 1.0.1)
-  pltraining-dirtree (~> 0.2.2)
+  camptocamp-augeas (>= 0)
+  jhoblitt-sysstat (>= 0)
+  lsstsqre-lsststack (>= 0)
+  maestrodev-wget (>= 0)
+  petems-swap_file (~> 4.0.0)
+  pltraining-dirtree (~> 0.3.0)
   puppetlabs-stdlib (>= 0)
 

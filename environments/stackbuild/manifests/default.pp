@@ -70,7 +70,7 @@ if $swaprequired >= to_bytes('1 GB') {
   $ensure_swap = 'absent'
 }
 
-class { 'swap_file':
+swap_file::files { 'default':
   ensure       => $ensure_swap,
   swapfilesize => $swaprequired,
 }

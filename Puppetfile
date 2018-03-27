@@ -1,13 +1,13 @@
 forge 'https://forgeapi.puppetlabs.com'
 
 mod 'puppetlabs/stdlib'
-mod 'camptocamp/augeas', '~> 1.4'
-mod 'petems/swap_file', '~> 1.0.1'
-mod 'jhoblitt/sysstat', '~> 1.1'
-mod 'maestrodev/wget', '~> 1.7'
-mod 'pltraining/dirtree', '~> 0.2.2'
+mod 'camptocamp/augeas'
+mod 'jhoblitt/sysstat'
+mod 'maestrodev/wget'
 
-#mod 'jhoblitt/lsststack', :git => 'https://github.com/lsst-sqre/puppet-lsststack.git'
-mod 'jhoblitt/lsststack',
-  :git => 'https://github.com/lsst-sqre/puppet-lsststack.git',
-  :ref => '6b15e727dde6fe792247f6a56d3c3e434cc481d3'
+mod 'petems/swap_file', '~> 4.0.0'
+mod 'pltraining/dirtree', '~> 0.3.0'
+
+mod 'lsstsqre/lsststack',
+  git: 'https://github.com/lsst-sqre/puppet-lsststack.git',
+  ref: 'f8ce1d8b435f53eb9f4a591f4572378988fb0d13'
