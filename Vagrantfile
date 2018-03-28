@@ -30,9 +30,6 @@ Vagrant.configure('2') do |config|
     hostname = gen_hostname('el6')
     define.vm.hostname = hostname
 
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/centos-6.7'
-    end
     define.vm.provider :digital_ocean do |provider, override|
       # XXX the slug name for 6.7 appears to be centos-6-5-x64
       provider.image = 'centos-6-x64'
@@ -57,9 +54,6 @@ Vagrant.configure('2') do |config|
     hostname = gen_hostname('el7')
     define.vm.hostname = hostname
 
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'bento/centos-7.2'
-    end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-x64'
     end
@@ -91,9 +85,6 @@ Vagrant.configure('2') do |config|
   config.vm.define 'u14' do |define|
     define.vm.hostname = gen_hostname('u14')
 
-    define.vm.provider :virtualbox do |provider, override|
-      override.vm.box = 'ubuntu/trusty64'
-    end
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-14-04-x64'
     end
@@ -128,11 +119,6 @@ Vagrant.configure('2') do |config|
       'lsst_stack_user' => 'vagrant',
       'lsst_stack_path' => '/opt/lsst/software/stack',
     }
-  end
-
-  config.vm.provider :virtualbox do |provider, override|
-    provider.memory = 2048
-    provider.cpus = 2
   end
 
   config.vm.provider :digital_ocean do |provider, override|
