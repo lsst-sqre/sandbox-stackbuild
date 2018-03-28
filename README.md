@@ -50,11 +50,11 @@ $ which VirtualBox
 ### Install Vagrant
 
 ```shell
-wget https://releases.hashicorp.com/vagrant/1.9.8/vagrant_1.9.8_x86_64.dmg
-hdiutil mount vagrant_1.9.8_x86_64.dmg
+wget https://releases.hashicorp.com/vagrant/2.0.3/vagrant_2.0.3_x86_64.dmg
+hdiutil mount vagrant_2.0.3_x86_64.dmg
 sudo installer -package /Volumes/Vagrant/Vagrant.pkg -target /
 hdiutil unmount /Volumes/Vagrant
-rm vagrant_1.9.8_x86_64.dmg
+rm vagrant_2.0.3_x86_64.dmg
 ```
 
 ```shell
@@ -62,6 +62,7 @@ rm vagrant_1.9.8_x86_64.dmg
 $ which vagrant
 /usr/bin/vagrant
 ```
+
 ### How to accept the Xcode License from the CLI
 
 This step can be skipped if you have already accepted the Xcode license or
@@ -73,15 +74,18 @@ If you see a warning like the following:
 $ git
 
 
-Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.
+Agreeing to the Xcode/iOS license requires admin privileges, please re-run as
+root via sudo.
 ```
 
 Run this command:
+
 ```shell
 sudo xcodebuild -license accept
 ```
 
 Then verify that the license warning is gone:
+
 ```shell
 # sanity check
 $ git --version
@@ -109,9 +113,9 @@ sudo usermod -a -G vboxusers $USER
 $ which VirtualBox
 /usr/bin/VirtualBox
 $ lsmod | grep -i box
-vboxpci                23256  0 
-vboxnetadp             25670  0 
-vboxnetflt             27605  0 
+vboxpci                23256  0
+vboxnetadp             25670  0
+vboxnetflt             27605  0
 vboxdrv               397320  6 vboxnetadp,vboxnetflt,vboxpci
 ```
 
@@ -122,6 +126,7 @@ sudo yum install -y https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_6
 ```
 
 Sanity check
+
 ```shell
 /usr/bin/vagrant
 ```
@@ -146,15 +151,13 @@ Suggested for usage with virtualbox:
 
 * vagrant-cachier
 
-Sandbox
--------
+DigitalOcean example
+--------------------
 
     vagrant plugin install vagrant-puppet-install
     vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
-    vagrant plugin install vagrant-cachier
 
     vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.9.0'
-    vagrant plugin install vagrant-aws --plugin-version '~> 0.6.0'
 
     # sanity check
     vagrant plugin list
@@ -164,10 +167,11 @@ Sandbox
     export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
     bundle install
     bundle exec rake
-    vagrant up
+    vagrant up el7
 
 Other useful commands
 ---------------------
+
     vagrant up --provider=virtual_box
     vagrant up --provider=digital_ocean
     vagrant up <hostname> --provider=digital_ocean
