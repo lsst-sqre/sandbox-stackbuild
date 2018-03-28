@@ -143,6 +143,7 @@ Vagrant.configure('2') do |config|
     override.ssh.username = 'vagrant'
     override.ssh.private_key_path = SSH_PRIVATE_KEY_PATH
     override.vm.synced_folder '.', '/vagrant', :disabled => true
+    override.ssh.insert_key = false
 
     provider.token = DO_API_TOKEN
     provider.region = 'nyc3'
@@ -223,6 +224,13 @@ else
   end
   SSH_PRIVATE_KEY_PATH="#{Dir.home}/.vagrant.d/insecure_private_key"
   SSH_PUBLIC_KEY_NAME='vagrant'
+  pub_key = "#{SSH_PRIVATE_KEY_PATH}.pub"
+  if not File.exist?(pub_key)
+    require 'open-uri'
+    open(pub_key, 'wb') do |file|
+      file << open('https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub').read
+    end
+  end
 end
 
 # -*- mode: ruby -*-
