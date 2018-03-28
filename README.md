@@ -4,48 +4,13 @@ LSST Stack build sandbox
 Prerequisites
 -------------
 
-* Vagrant 1.9.x
+* Vagrant 2.0.x
 * `git` - needed to clone this repo
 
-Suggested
----------
-
-Only required if you intended to run VMs locally (parallels or VMWare Fusion
-are also options but not presently supported)
-
-* VirtualBox (used by Vagrant)
-
-SQRE credentials
-----------------
-
-    cd ~
-    git clone ~/Dropbox/lsst-sqre/git/sqre.git .sqre
-    chmod 0700 .sqre
-    ls -lad .sqre
-    export SQRE_SANDBOX_GROUP=sqre
-
-### VirtualBox && Vagrant Installation
+### Vagrant Installation
 
 OSX
 ---
-
-### Install VirtualBox
-
-```shell
-# based on:
-# http://slaptijack.com/system-administration/os-x-cli-install-virtualbox/
-wget http://download.virtualbox.org/virtualbox/4.3.20/VirtualBox-4.3.20-96996-OSX.dmg
-hdiutil mount VirtualBox-4.3.20-96996-OSX.dmg
-sudo installer -package /Volumes/VirtualBox/VirtualBox.pkg -target /
-hdiutil unmount /Volumes/VirtualBox
-rm VirtualBox-4.3.20-96996-OSX.dmg
-```
-
-```shell
-# sanity check
-$ which VirtualBox
-/usr/bin/VirtualBox
-```
 
 ### Install Vagrant
 
@@ -95,34 +60,10 @@ git version 1.8.5.2 (Apple Git-48)
 Fedora 21
 ---------
 
-### Install VirtualBox
-
-```shell
-# http://www.if-not-true-then-false.com/2010/install-virtualbox-with-yum-on-fedora-centos-red-hat-rhel/
-cd /etc/yum.repos.d/
-sudo wget http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
-
-sudo yum install -y binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
-sudo yum install -y VirtualBox-4.3
-sudo service vboxdrv setup
-sudo usermod -a -G vboxusers $USER
-```
-
-```shell
-# sanity check
-$ which VirtualBox
-/usr/bin/VirtualBox
-$ lsmod | grep -i box
-vboxpci                23256  0
-vboxnetadp             25670  0
-vboxnetflt             27605  0
-vboxdrv               397320  6 vboxnetadp,vboxnetflt,vboxpci
-```
-
 ### Install Vagrant
 
 ```shell
-sudo yum install -y https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.rpm
+sudo yum install -y https://dl.bintray.com/mitchellh/vagrant/vagrant_2.0.3_x86_64.rpm
 ```
 
 Sanity check
@@ -136,37 +77,13 @@ Vagrant plugins
 
 These are required:
 
-* vagrant-puppet-install
-* vagrant-librarian-puppet '~> 0.9.0'
-
-Needed for DigitalOcean
-
 * vagrant-digitalocean '~> 0.7.3'
-
-Needed for AWS EC2
-
-* vagrant-aws '~> 0.7.0'
-
-Suggested for usage with virtualbox:
-
-* vagrant-cachier
 
 DigitalOcean example
 --------------------
 
-    vagrant plugin install vagrant-puppet-install
-    vagrant plugin install vagrant-librarian-puppet --plugin-version '~> 0.9.0'
-
-    vagrant plugin install vagrant-digitalocean --plugin-version '~> 0.9.0'
-
-    # sanity check
-    vagrant plugin list
-
     git clone git@github.com:lsst-sqre/sandbox-stackbuild.git
     cd sandbox-stackbuild
-    export VAGRANT_DEFAULT_PROVIDER='digital_ocean'
-    bundle install
-    bundle exec rake
     vagrant up el7
 
 Other useful commands
