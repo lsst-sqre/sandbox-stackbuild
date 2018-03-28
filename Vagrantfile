@@ -1,6 +1,4 @@
 required_plugins = %w{
-  vagrant-librarian-puppet
-  vagrant-puppet-install
 }
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
@@ -70,29 +68,6 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  # setup the remote repo needed to install a current version of puppet
-  config.puppet_install.puppet_version = '4.10.6'
-
-  config.vm.provision "puppet", type: :puppet do |puppet|
-    #puppet.hiera_config_path = "hiera.yaml"
-    puppet.environment_path  = "environments"
-    puppet.environment       = "stackbuild"
-    puppet.manifests_path    = "environments/stackbuild/manifests"
-    puppet.manifest_file     = "default.pp"
-
-    puppet.options = [
-     '--verbose',
-     '--trace',
-     '--report',
-     '--show_diff',
-     '--disable_warnings=deprecations',
-    ]
-    puppet.facter = {
-      'lsst_stack_user' => 'vagrant',
-      'lsst_stack_path' => '/opt/lsst/software/stack',
-    }
-  end
-
   config.vm.provider :digital_ocean do |provider, override|
     override.vm.box = 'digital_ocean'
     override.nfs.functional = false
@@ -108,11 +83,6 @@ Vagrant.configure('2') do |config|
     provider.size = '16gb'
     provider.setup = true
     provider.ssh_key_name = SSH_PUBLIC_KEY_NAME
-  end
-
-  if Vagrant.has_plugin?('vagrant-librarian-puppet')
-    config.librarian_puppet.placeholder_filename = ".gitkeep"
-    config.librarian_puppet.puppetfile_dir = "environments/stackbuild/modules"
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")
