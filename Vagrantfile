@@ -1,4 +1,5 @@
 required_plugins = %w{
+  vagrant-digitalocean
 }
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
