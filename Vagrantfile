@@ -53,11 +53,11 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'u14' do |define|
+  config.vm.define 'u18' do |define|
     define.vm.hostname = gen_hostname('u14')
 
     define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-14-04-x64'
+      provider.image = 'ubuntu-18-04-x64'
     end
   end
 
