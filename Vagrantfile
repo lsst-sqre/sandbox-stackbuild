@@ -53,19 +53,27 @@ Vagrant.configure('2') do |config|
     end
   end
 
+  config.vm.define 'u1910' do |define|
+    define.vm.hostname = gen_hostname('u1910')
+
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-19-10-x64'
+    end
+  end
+
+  config.vm.define 'u1904' do |define|
+    define.vm.hostname = gen_hostname('u1904')
+
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-19-04-x64'
+    end
+  end
+
   config.vm.define 'u18' do |define|
     define.vm.hostname = gen_hostname('u14')
 
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-18-04-x64'
-    end
-  end
-
-  config.vm.define 'u16' do |define|
-    define.vm.hostname = gen_hostname('u16')
-
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-16-04-x64'
     end
   end
 
