@@ -34,7 +34,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'el8' do |define|
+  config.vm.define 'el8', primary: true do |define|
     hostname = gen_hostname('el8')
     define.vm.hostname = hostname
 
