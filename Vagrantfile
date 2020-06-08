@@ -25,16 +25,6 @@ manage_etc_hosts: localhost
 end
 
 Vagrant.configure('2') do |config|
-  config.vm.define 'el6', primary: true do |define|
-    hostname = gen_hostname('el6')
-    define.vm.hostname = hostname
-
-    define.vm.provider :digital_ocean do |provider, override|
-      # XXX the slug name for 6.7 appears to be centos-6-5-x64
-      provider.image = 'centos-6-x64'
-    end
-  end
-
   config.vm.define 'el7' do |define|
     hostname = gen_hostname('el7')
     define.vm.hostname = hostname
