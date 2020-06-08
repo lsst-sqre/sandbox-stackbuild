@@ -25,22 +25,21 @@ manage_etc_hosts: localhost
 end
 
 Vagrant.configure('2') do |config|
-  config.vm.define 'el6', primary: true do |define|
-    hostname = gen_hostname('el6')
-    define.vm.hostname = hostname
-
-    define.vm.provider :digital_ocean do |provider, override|
-      # XXX the slug name for 6.7 appears to be centos-6-5-x64
-      provider.image = 'centos-6-x64'
-    end
-  end
-
   config.vm.define 'el7' do |define|
     hostname = gen_hostname('el7')
     define.vm.hostname = hostname
 
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'centos-7-x64'
+    end
+  end
+
+  config.vm.define 'el8', primary: true do |define|
+    hostname = gen_hostname('el8')
+    define.vm.hostname = hostname
+
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'centos-8-x64'
     end
   end
 
@@ -53,27 +52,19 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'u1910' do |define|
-    define.vm.hostname = gen_hostname('u1910')
-
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-19-10-x64'
-    end
-  end
-
-  config.vm.define 'u1904' do |define|
-    define.vm.hostname = gen_hostname('u1904')
-
-    define.vm.provider :digital_ocean do |provider, override|
-      provider.image = 'ubuntu-19-04-x64'
-    end
-  end
-
   config.vm.define 'u18' do |define|
-    define.vm.hostname = gen_hostname('u14')
+    define.vm.hostname = gen_hostname('u18')
 
     define.vm.provider :digital_ocean do |provider, override|
       provider.image = 'ubuntu-18-04-x64'
+    end
+  end
+
+  config.vm.define 'u20' do |define|
+    define.vm.hostname = gen_hostname('u20')
+
+    define.vm.provider :digital_ocean do |provider, override|
+      provider.image = 'ubuntu-20-04-x64'
     end
   end
 
